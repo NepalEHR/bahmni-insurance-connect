@@ -59,6 +59,9 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 	
 	@Autowired 
 	private BahmniOpenmrsApiClientServiceImpl bahmniApiService;
+	
+	@Autowired 
+	private ImisRestClientServiceImpl imisRestClientService;
 
 	@Override
 	public String getFhirPatient(String name) {
@@ -111,8 +114,8 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 		// Insuree patient
 		Reference patientReference = new Reference();
-		patientReference.setReference("Patient/" + InsureeModel.getUuId());
-		System.out.println("Patient/" + claimParam.getInsureeId());
+		InsureeModel insureeModel = imisRestClientService.getInsuree(claimParam.getInsureeId());
+		patientReference.setReference("Patient/" + insureeModel.getUuId());
 		claimReq.setPatient(patientReference);
 
 		// BillablePeriod
@@ -139,7 +142,7 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 		// Diagnosis 
 
-		BahmniDiagnosis bahmniDianosis  =  bahmniApiService.getDiagnosis(claimParam.getPatientUUID(), claimParam.getVisitUUID(), new Date( visitDetails.getStartDateTime()));
+		BahmniDiagnosis bahmniDianosis  =  bahmniApiService.getDiagnosis(claimParam.getPatientUUID(), claimParam.getVisitUUID());
 		int sequence = 1;
 		for (Diagnosis diag :bahmniDianosis.getDiagnosis() ) {
 			System.out.println("diag.getAdditionalProperties().get(\"certainty\") : " + diag.getAdditionalProperties().get("certainty"));

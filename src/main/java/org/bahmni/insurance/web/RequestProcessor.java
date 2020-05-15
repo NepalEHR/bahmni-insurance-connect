@@ -251,13 +251,13 @@ public class RequestProcessor {
 
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/diagnosis/{patientUUID}/{visitUUID}/{fromDate}", produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, value = "/diagnosis/{patientUUID}/{visitUUID}", produces = "application/json")
 	@ResponseBody
 	public BahmniDiagnosis getDiagnosisDetails(HttpServletResponse response,@PathVariable("patientUUID")
 	String patientUUID,@PathVariable("visitUUID") String visitUUID,@PathVariable("fromDate")Date fromDate)
  throws JsonParseException, JsonMappingException, IOException {
-		logger.debug("get Diagnosis Detail : " + bahmniOpenmrsService.getDiagnosis(patientUUID ,visitUUID,fromDate));
-		return bahmniOpenmrsService.getDiagnosis(patientUUID,visitUUID,fromDate);
+		logger.debug("get Diagnosis Detail : " + bahmniOpenmrsService.getDiagnosis(patientUUID ,visitUUID));
+		return bahmniOpenmrsService.getDiagnosis(patientUUID,visitUUID);
 
 	}
 	
