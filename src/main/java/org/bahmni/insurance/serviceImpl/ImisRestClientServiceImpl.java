@@ -151,9 +151,15 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	}
 	private ClaimResponseModel populateClaimRespModel(ClaimResponse claimResponse, BigDecimal totalclaimedAmount) {
 		ClaimResponseModel clmRespModel = new ClaimResponseModel();
-		
 		clmRespModel.setClaimStatus(claimResponse.getOutcome().getText());
-		clmRespModel.setClaimId(claimResponse.getId());
+		for(Identifier id: claimResponse.getIdentifier()) {
+			for(Coding coding : id.getType().getCoding()) {
+				if("MR".equals(coding.getCode())) {
+					clmRespModel.setClaimId(id.getValue());
+					break;
+				}
+			}
+		}
 		
 		if(ImisConstants.CLAIM_OUTCOME.REJECTED.getOutCome().equals(claimResponse.getOutcome().getText())) {
 			clmRespModel.setApprovedTotal(claimResponse.getTotalBenefit().getValue());
