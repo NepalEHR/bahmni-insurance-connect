@@ -15,6 +15,7 @@ import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpServerErrorException.BadGateway;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.context.request.WebRequest;
 
@@ -38,9 +39,13 @@ public class CustomWebErrorController implements ErrorController {
 		String  operationOutcomeException = null;
 		if (errorAttributes.getError(request) instanceof HttpStatusCodeException) {
 			HttpStatusCodeException errorHttp = (HttpStatusCodeException) errorAttributes.getError(request);
-			System.out.println(errorHttp.getResponseBodyAsString());
-			OperationOutcome operationOutcome = (OperationOutcome) FhirContext.forDstu3().newJsonParser().parseResource(errorHttp.getResponseBodyAsString());
-			operationOutcomeException = operationOutcome.getIssue().get(0).getDetails().getText();
+			logger.error(errorHttp.getResponseBodyAsString());
+			if (errorHttp.getRawStatusCode() == 502 || errorHttp.getRawStatusCode() == 403) {
+				operationOutcomeException = errorHttp.getResponseBodyAsString();
+			} else {
+				OperationOutcome operationOutcome = (OperationOutcome) FhirContext.forDstu3().newJsonParser().parseResource(errorHttp.getResponseBodyAsString());
+				operationOutcomeException = operationOutcome.getIssue().get(0).getDetails().getText();
+			}
 			response.setStatus(errorHttp.getRawStatusCode());
 		}
 		ErrorJson error = new ErrorJson(response.getStatus(), operationOutcomeException, getErrorAttributes(request, includeErrorTrace));
