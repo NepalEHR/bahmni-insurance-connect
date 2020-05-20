@@ -38,6 +38,7 @@ public class CustomWebErrorController implements ErrorController {
 		String  operationOutcomeException = null;
 		if (errorAttributes.getError(request) instanceof HttpStatusCodeException) {
 			HttpStatusCodeException errorHttp = (HttpStatusCodeException) errorAttributes.getError(request);
+			System.out.println(errorHttp.getResponseBodyAsString());
 			OperationOutcome operationOutcome = (OperationOutcome) FhirContext.forDstu3().newJsonParser().parseResource(errorHttp.getResponseBodyAsString());
 			operationOutcomeException = operationOutcome.getIssue().get(0).getDetails().getText();
 			response.setStatus(errorHttp.getRawStatusCode());
