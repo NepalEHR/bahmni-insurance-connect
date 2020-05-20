@@ -18,6 +18,18 @@ public class ClaimLineItemResponse {
 	@SerializedName("status")
 	@Expose
 	private String status;
+	
+	@SerializedName("code")
+	@Expose
+	private String code;
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 	@SerializedName("rejectedReason")
 	@Expose

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 import org.apache.commons.codec.binary.Base64;
 import org.bahmni.insurance.AppProperties;
 import org.bahmni.insurance.ImisConstants;
@@ -25,6 +24,7 @@ import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.Bundle.BundleLinkComponent;
 import org.hl7.fhir.dstu3.model.Claim;
 import org.hl7.fhir.dstu3.model.ClaimResponse;
+import org.hl7.fhir.dstu3.model.ClaimResponse.AddedItemComponent;
 import org.hl7.fhir.dstu3.model.ClaimResponse.AdjudicationComponent;
 import org.hl7.fhir.dstu3.model.ClaimResponse.ItemComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
@@ -63,8 +63,7 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	private final RestTemplate restTemplate = new RestTemplate();
 	private final IParser FhirParser = FhirContext.forDstu3().newJsonParser();
 	private final org.apache.log4j.Logger logger = getLogger(ImisRestClientServiceImpl.class);
-	
-	
+
 	private AppProperties properties;
 
 	public ImisRestClientServiceImpl(AppProperties prop) {
@@ -94,7 +93,7 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		HttpHeaders headers = createHeaders(properties.imisUser, properties.imisPassword);
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		headers.add("Content-Type", "application/json");
-		headers.add("remote-user", properties.openImisRemoteUser); 
+		headers.add("remote-user", properties.openImisRemoteUser);
 		HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
 		return restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
@@ -110,7 +109,7 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		HttpHeaders headers = createHeaders(properties.imisUser, properties.imisPassword);
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		headers.add("Content-Type", "application/json");
-		headers.add("remote-user", properties.openImisRemoteUser); 
+		headers.add("remote-user", properties.openImisRemoteUser);
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		return restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();
 
@@ -149,19 +148,21 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		BigDecimal totalclaimedAmount = claimRequest.getTotal().getValue();
 		return populateClaimRespModel(claimResponse, totalclaimedAmount);
 	}
+
 	private ClaimResponseModel populateClaimRespModel(ClaimResponse claimResponse, BigDecimal totalclaimedAmount) {
 		ClaimResponseModel clmRespModel = new ClaimResponseModel();
+
 		clmRespModel.setClaimStatus(claimResponse.getOutcome().getText());
-		for(Identifier id: claimResponse.getIdentifier()) {
-			for(Coding coding : id.getType().getCoding()) {
-				if("MR".equals(coding.getCode())) {
+		for (Identifier id : claimResponse.getIdentifier()) {
+			for (Coding coding : id.getType().getCoding()) {
+				if ("MR".equals(coding.getCode())) {
 					clmRespModel.setClaimId(id.getValue());
 					break;
 				}
 			}
 		}
-		
-		if(ImisConstants.CLAIM_OUTCOME.REJECTED.getOutCome().equals(claimResponse.getOutcome().getText())) {
+
+		if (ImisConstants.CLAIM_OUTCOME.REJECTED.getOutCome().equals(claimResponse.getOutcome().getText())) {
 			clmRespModel.setApprovedTotal(claimResponse.getTotalBenefit().getValue());
 			clmRespModel.setDateProcessed(claimResponse.getPayment().getDate());
 		}
@@ -172,103 +173,116 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 			claimItem.setSequence(responseItem.getSequenceLinkIdElement().getValue());
 
 			for (AdjudicationComponent adj : responseItem.getAdjudication()) {
-				if(ImisConstants.CLAIM_ADJ_CATEGORY.GENERAL.equals(adj.getCategory().getText())){
+				if (ImisConstants.CLAIM_ADJ_CATEGORY.GENERAL.equals(adj.getCategory().getText())) {
 					claimItem.setStatus(adj.getReason().getText());
 					claimItem.setQuantityApproved(adj.getValue());
 					if (ImisConstants.CLAIM_ITEM_STATUS.PASSED.equalsIgnoreCase(adj.getReason().getText())) {
 						claimItem.setTotalApproved(adj.getAmount().getValue());
 					}
 				}
-				if(ImisConstants.CLAIM_ADJ_CATEGORY.REJECTED_REASON.equals(adj.getCategory().getText())){
-					claimItem.setRejectedReason(ImisConstants.ERROR_CODE_TO_TEXT_MAP.get(Integer.parseInt(adj.getReason().getCoding().get(0).getCode())));
+				if (ImisConstants.CLAIM_ADJ_CATEGORY.REJECTED_REASON.equals(adj.getCategory().getText())) {
+					claimItem.setRejectedReason(ImisConstants.ERROR_CODE_TO_TEXT_MAP
+							.get(Integer.parseInt(adj.getReason().getCoding().get(0).getCode())));
 				}
 			}
+
 			claimItem.setSequence(responseItem.getSequenceLinkId());
+			for (AddedItemComponent itemComponent : claimResponse.getAddItem()) {
+				if (itemComponent.getSequenceLinkId().get(0).getValue().equals(claimItem.getSequence())) {
+					claimItem.setCode(itemComponent.getService().getCoding().get(0).getCode());
+					break;
+				}
+
+			}
 			claimLineItems.add(claimItem);
-			
+
 		}
-		
+
 		if (claimResponse.getTotalBenefit().getValue() != null) {
 			clmRespModel.setApprovedTotal(claimResponse.getTotalBenefit().getValue());
 		} else if (totalclaimedAmount != null) {
 			clmRespModel.setApprovedTotal(totalclaimedAmount);
 		}
-		
+
 		clmRespModel.setClaimLineItems(claimLineItems);
 		return clmRespModel;
 	}
 
 	@Override
-	public EligibilityResponseModel checkEligibility(EligibilityRequest eligbilityRequest){
+	public EligibilityResponseModel checkEligibility(EligibilityRequest eligbilityRequest) {
 		String jsonEligRequest = FhirParser.encodeResourceToString(eligbilityRequest);
 		EligibilityResponseModel ResponseELigible;
-		
-		ResponseEntity<String> responseObject = sendPostRequest(jsonEligRequest, properties.openImisFhirApiEligPolicyEnabled);
-		EligibilityResponse eligibilityResponse = (EligibilityResponse) FhirParser.parseResource(responseObject.getBody());
+
+		ResponseEntity<String> responseObject = sendPostRequest(jsonEligRequest,
+				properties.openImisFhirApiEligPolicyEnabled);
+		EligibilityResponse eligibilityResponse = (EligibilityResponse) FhirParser
+				.parseResource(responseObject.getBody());
 		ResponseELigible = populateEligibilityRespModelPolicyEnabled(eligibilityResponse);
-		
-		
+
 		return ResponseELigible;
 	}
-	
-	private EligibilityResponseModel populateEligibilityRespModelPolicyEnabled(EligibilityResponse eligibilityResponse) {
+
+	private EligibilityResponseModel populateEligibilityRespModelPolicyEnabled(
+			EligibilityResponse eligibilityResponse) {
 		EligibilityResponseModel eligRespModel = new EligibilityResponseModel();
 		eligRespModel.setPolicy(properties.openImisPolicyEnabled);
 
-		List<EligibilityBalance> eligibilityBalance = new ArrayList<>();	
+		List<EligibilityBalance> eligibilityBalance = new ArrayList<>();
 		EligibilityBalance eligBalance = new EligibilityBalance();
 
 		for (InsuranceComponent insurance : eligibilityResponse.getInsurance()) {
-			if(insurance.getContract().getReference() != null) {
-				String last = (insurance.getContract().getReference()).substring((insurance.getContract().getReference()).lastIndexOf('/') + 1);
+			if (insurance.getContract().getReference() != null) {
+				String last = (insurance.getContract().getReference())
+						.substring((insurance.getContract().getReference()).lastIndexOf('/') + 1);
 				eligBalance.setValidDate(last);
 
-				}
-			for (BenefitsComponent benefitBalance : insurance.getBenefitBalance()){				
-						
-				eligBalance.setCategory(benefitBalance.getCategory().getText());
-					for(BenefitComponent financial : benefitBalance.getFinancial()) {
-						if (financial.getAllowed() instanceof Money) {
-							eligBalance.setBenefitBalance(financial.getAllowedMoney().getValue().subtract(financial.getUsedMoney().getValue()));
-									eligibilityBalance.add(eligBalance);
+			}
+			for (BenefitsComponent benefitBalance : insurance.getBenefitBalance()) {
 
-						}
+				eligBalance.setCategory(benefitBalance.getCategory().getText());
+				for (BenefitComponent financial : benefitBalance.getFinancial()) {
+					if (financial.getAllowed() instanceof Money) {
+						eligBalance.setBenefitBalance(
+								financial.getAllowedMoney().getValue().subtract(financial.getUsedMoney().getValue()));
+						eligibilityBalance.add(eligBalance);
 
 					}
 
-			}	
+				}
+
+			}
 
 			eligRespModel.setEligibilityBalance(eligibilityBalance);
 		}
 		return eligRespModel;
 	}
+
 	private EligibilityResponseModel populateEligibilityRespModel(EligibilityResponse eligibilityResponse) {
 		EligibilityResponseModel eligRespModel = new EligibilityResponseModel();
-		/*eligRespModel.setNhisId(eligibilityResponse.getId());
-		eligRespModel.setPatientId(eligibilityResponse.getId());*/	
+		/*
+		 * eligRespModel.setNhisId(eligibilityResponse.getId());
+		 * eligRespModel.setPatientId(eligibilityResponse.getId());
+		 */
 		List<EligibilityBalance> eligibilityBalance = new ArrayList<>();
-		for (InsuranceComponent insurance : eligibilityResponse.getInsurance()) {	
-			for (BenefitsComponent benefitBalance : insurance.getBenefitBalance()){
+		for (InsuranceComponent insurance : eligibilityResponse.getInsurance()) {
+			for (BenefitsComponent benefitBalance : insurance.getBenefitBalance()) {
 				EligibilityBalance eligBalance = new EligibilityBalance();
-				
-				
-				for(Coding code : benefitBalance.getCategory().getCoding()) {
+
+				for (Coding code : benefitBalance.getCategory().getCoding()) {
 					eligBalance.setCategory(code.getSystem());
 				}
-				
-				
-				for(BenefitComponent financial : benefitBalance.getFinancial()) {
-						if (financial.getAllowed() instanceof Money) {
-							eligBalance.setBenefitBalance(financial.getAllowedMoney().getValue());
-							eligibilityBalance.add(eligBalance);
-						}
+
+				for (BenefitComponent financial : benefitBalance.getFinancial()) {
+					if (financial.getAllowed() instanceof Money) {
+						eligBalance.setBenefitBalance(financial.getAllowedMoney().getValue());
+						eligibilityBalance.add(eligBalance);
 					}
+				}
 			}
 			eligRespModel.setEligibilityBalance(eligibilityBalance);
 		}
 		return eligRespModel;
 	}
-	
 
 	@Override
 	public ClaimResponse getClaimStatus(Task claimStatusRequest) {
@@ -283,52 +297,48 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 
 	@Override
 	public ClaimResponseModel getClaimResponse(String claimID) {
-		String claimResponseStr = sendGetRequest(properties.imisUrl+"/ClaimResponse/"+claimID);
+		String claimResponseStr = sendGetRequest(properties.imisUrl + "/ClaimResponse/" + claimID);
 		ClaimResponse claimResponse = (ClaimResponse) FhirParser.parseResource(claimResponseStr);
-		return populateClaimRespModel(claimResponse, null); 
-		
-	}
-	
-	@Override
-	public InsureeModel getInsuree(String chfID){
-		System.out.println(properties.imisUrl+"Patient/?identifier="+chfID);
+		return populateClaimRespModel(claimResponse, null);
 
-		String insureeStr = sendGetRequest(properties.imisUrl+"Patient/?identifier="+chfID);
-		//Patient patient = (Patient) FhirParser.parseResource(insureeStr);
-		Bundle bundle = (Bundle)FhirParser.parseResource(insureeStr);
-		return populateInsureeModel(bundle); 
 	}
-	
+
+	@Override
+	public InsureeModel getInsuree(String chfID) {
+		System.out.println(properties.imisUrl + "Patient/?identifier=" + chfID);
+
+		String insureeStr = sendGetRequest(properties.imisUrl + "Patient/?identifier=" + chfID);
+		// Patient patient = (Patient) FhirParser.parseResource(insureeStr);
+		Bundle bundle = (Bundle) FhirParser.parseResource(insureeStr);
+		return populateInsureeModel(bundle);
+	}
+
 	private InsureeModel populateInsureeModel(Bundle bundle) {
 		InsureeModel insureeModel = new InsureeModel();
-		for(BundleEntryComponent entry: bundle.getEntry()) {
+		for (BundleEntryComponent entry : bundle.getEntry()) {
 			Patient patient = (Patient) entry.getResource();
-			
+
 			insureeModel.setUuId(patient.getIdentifier().get(0).getValue());
-			
-			for(HumanName reponseName:patient.getName()) {
+
+			for (HumanName reponseName : patient.getName()) {
 				insureeModel.setFamilyName(reponseName.getFamily());
-				insureeModel.setGivenName(reponseName.getGivenAsSingleString());			
+				insureeModel.setGivenName(reponseName.getGivenAsSingleString());
 			}
-			
+
 			insureeModel.setBirthdate(patient.getBirthDate());
 			insureeModel.setGender(patient.getGender().toString());
-			
+
 			for (Address responseAddress : patient.getAddress()) {
 				insureeModel.setAddress(responseAddress.getText());
 			}
-		
-			for(ContactPoint responseTelephone:patient.getTelecom()) {
-			insureeModel.setTelephone(responseTelephone.getValue());
+
+			for (ContactPoint responseTelephone : patient.getTelecom()) {
+				insureeModel.setTelephone(responseTelephone.getValue());
 			}
 		}
-		
+
 		logger.error("After insuree detail" + insureeModel);
 		return insureeModel;
-		}
-		
-	
-
-	
+	}
 
 }
