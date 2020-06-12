@@ -160,8 +160,6 @@ public class RequestProcessor {
 			throws RestClientException, URISyntaxException, DataFormatException, IOException {
 		logger.error("submitClaim : "+InsuranceUtils.mapToJson(claimParams));
 
-		//claimParams.setClaimId("980"); // TODO: remove hard coded
-		
 		Claim claimRequest = fhirConstructorService.constructFhirClaimRequest(claimParams);
 		logger.error("claimRequest : "+FhirParser.encodeResourceToString(claimRequest));
 		String claimReqStr = FhirParser.encodeResourceToString(claimRequest);

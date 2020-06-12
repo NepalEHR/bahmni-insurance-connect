@@ -7,6 +7,7 @@ import java.util.List;
 public class ClaimResponseModel {
 
 	private String claimId;
+	private String claimUUID;
 	private BigDecimal claimedTotal;
 	private BigDecimal approvedTotal;
 	private Date dateProcessed;
@@ -79,6 +80,14 @@ public class ClaimResponseModel {
 
 	public void setPaymentType(String paymentType) {
 		this.paymentType = paymentType;
+	}
+
+	public String getClaimUUID() {
+		return claimUUID;
+	}
+
+	public void setClaimUUID(String claimUUID) {
+		this.claimUUID = claimUUID;
 	}
 
 }
