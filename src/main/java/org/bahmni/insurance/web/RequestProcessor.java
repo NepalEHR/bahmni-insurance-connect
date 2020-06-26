@@ -23,6 +23,7 @@ import org.bahmni.insurance.model.ClaimParam;
 import org.bahmni.insurance.model.ClaimResponseModel;
 import org.bahmni.insurance.model.EligibilityResponseModel;
 import org.bahmni.insurance.model.FhirResourceModel;
+import org.bahmni.insurance.model.InsuranceSummary;
 import org.bahmni.insurance.model.InsureeModel;
 import org.bahmni.insurance.model.VisitSummary;
 import org.bahmni.insurance.service.AFhirConstructorService;
@@ -96,7 +97,6 @@ public class RequestProcessor {
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/hasInsurancePrivilege")
 	public Boolean checkPrevilage(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		System.out.println("after has privilage link");
     	return  authenticationFilter.preHandle(request, response);
     }
 	
@@ -129,8 +129,6 @@ public class RequestProcessor {
 			throws IOException {
 		InsureeModel insureeModel = insuranceImplFactory
 				.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR, properties).getInsuree(chfID);
-		System.out.println("InsureeModel : " + InsuranceUtils.mapToJson(insureeModel));
-
 		return insureeModel;
 
 	}
@@ -187,7 +185,6 @@ public class RequestProcessor {
 		//claimId = "980"; //TODO: remove hardcoded
 		ClaimResponseModel claimResponseModel = insuranceImplFactory
 				.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR, properties).getClaimResponse(claimId);
-		System.out.println("claimResponseModel : " + InsuranceUtils.mapToJson(claimResponseModel));
 
 		return claimResponseModel;
 
@@ -246,6 +243,13 @@ public class RequestProcessor {
 	public VisitSummary getVisitDetails(HttpServletResponse response, @PathVariable("visitUUID") String visitUUID) throws JsonParseException, JsonMappingException, IOException {
 		logger.debug("getVisitDetails : ");
 		return bahmniOpenmrsService.getVisitDetail(visitUUID);
+
+	}
+	@RequestMapping(method = RequestMethod.GET, value = "/insurace/{patientUUID}", produces = "application/json")
+	@ResponseBody
+	public InsuranceSummary getInsuranceDetails(HttpServletResponse response, @PathVariable("patientUUID") String patientUUID) throws JsonParseException, JsonMappingException, IOException {
+		logger.debug("getInsuranceDetails : ");
+		return bahmniOpenmrsService.getInsuranceDetail(patientUUID);
 
 	}
 

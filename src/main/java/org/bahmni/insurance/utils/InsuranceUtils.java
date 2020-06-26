@@ -59,6 +59,12 @@ public class InsuranceUtils {
 		ObjectMapper objectMapper = new ObjectMapper();
 		return objectMapper.readValue(json, clazz);
 	}
+	public static <T> T mapFromXML(String xml, Class<T> clazz)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		return objectMapper.readValue(xml, clazz);
+	}
 	
 	public static String convertBahmniDateStr(Date bahmniDate) {
 		SimpleDateFormat inputPutdateFormat = new SimpleDateFormat("yyyy-MM-dd");

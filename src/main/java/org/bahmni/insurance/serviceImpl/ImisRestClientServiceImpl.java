@@ -144,14 +144,12 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		String jsonClaimRequest = FhirParser.encodeResourceToString(claimRequest);
 		ResponseEntity<String> responseObject = sendPostRequest(jsonClaimRequest, properties.openImisFhirApiClaim);
 		ClaimResponse claimResponse = (ClaimResponse) FhirParser.parseResource(responseObject.getBody());
-		System.out.println(FhirParser.encodeResourceToString(claimResponse));
 		BigDecimal totalclaimedAmount = claimRequest.getTotal().getValue();
 		return populateClaimRespModel(claimResponse, totalclaimedAmount);
 	}
 
 	private ClaimResponseModel populateClaimRespModel(ClaimResponse claimResponse, BigDecimal totalclaimedAmount) {
 		ClaimResponseModel clmRespModel = new ClaimResponseModel();
-		System.out.println("claimResponse.getId()" +  claimResponse.getId());
 		clmRespModel.setClaimUUID(claimResponse.getId());
 		clmRespModel.setClaimStatus(claimResponse.getOutcome().getText());
 		for (Identifier id : claimResponse.getIdentifier()) {
@@ -305,39 +303,27 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	}
 
 	@Override
-	public InsureeModel getInsuree(String chfID) {
-		System.out.println(properties.imisUrl + "Patient/?identifier=" + chfID);
-
-		String insureeStr = sendGetRequest(properties.imisUrl + "Patient/?identifier=" + chfID);
-		// Patient patient = (Patient) FhirParser.parseResource(insureeStr);
-		Bundle bundle = (Bundle) FhirParser.parseResource(insureeStr);
-		return populateInsureeModel(bundle);
+	public InsureeModel getInsuree(String chfID){
+		String insureeStr = sendGetRequest(properties.imisUrl+"Patient?id="+chfID);
+		Patient patient = (Patient) FhirParser.parseResource(insureeStr);
+		return populateInsureeModel(patient); 
 	}
-
-	private InsureeModel populateInsureeModel(Bundle bundle) {
+	
+	private InsureeModel populateInsureeModel(Patient patient) {
 		InsureeModel insureeModel = new InsureeModel();
-		for (BundleEntryComponent entry : bundle.getEntry()) {
-			Patient patient = (Patient) entry.getResource();
-
-			insureeModel.setUuId(patient.getIdentifier().get(0).getValue());
-
-			for (HumanName reponseName : patient.getName()) {
-				insureeModel.setFamilyName(reponseName.getFamily());
-				insureeModel.setGivenName(reponseName.getGivenAsSingleString());
-			}
-
-			insureeModel.setBirthdate(patient.getBirthDate());
-			insureeModel.setGender(patient.getGender().toString());
-
-			for (Address responseAddress : patient.getAddress()) {
-				insureeModel.setAddress(responseAddress.getText());
-			}
-
-			for (ContactPoint responseTelephone : patient.getTelecom()) {
-				insureeModel.setTelephone(responseTelephone.getValue());
-			}
+		
+		for (Address responseAddress : patient.getAddress()) {
+			insureeModel.setAddress(responseAddress.getText());
 		}
-
+		insureeModel.setBirthdate(patient.getBirthDate());
+		insureeModel.setGender(patient.getGender().toString());
+		for(HumanName reponseName:patient.getName()) {
+			insureeModel.setFamilyName(reponseName.getFamily());
+			insureeModel.setGivenName(reponseName.getGivenAsSingleString());			
+		}
+		for(ContactPoint responseTelephone:patient.getTelecom()) {
+			insureeModel.setTelephone(responseTelephone.getValue());
+		}
 		logger.error("After insuree detail" + insureeModel);
 		return insureeModel;
 	}

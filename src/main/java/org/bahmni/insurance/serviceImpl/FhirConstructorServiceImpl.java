@@ -15,6 +15,7 @@ import org.bahmni.insurance.model.BahmniDiagnosis;
 import org.bahmni.insurance.model.ClaimLineItemRequest;
 import org.bahmni.insurance.model.ClaimParam;
 import org.bahmni.insurance.model.EligibilityParam;
+import org.bahmni.insurance.model.InsuranceSummary;
 import org.bahmni.insurance.model.InsureeModel;
 import org.bahmni.insurance.model.Diagnosis;
 import org.bahmni.insurance.model.VisitSummary;
@@ -95,7 +96,6 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 	@Override
 	public Claim constructFhirClaimRequest(ClaimParam claimParam) throws IOException {
-		
 		Claim claimReq = new Claim();
 
 		// claim number
@@ -121,11 +121,12 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		// BillablePeriod
 		Period period = new Period();
 		VisitSummary visitDetails = bahmniApiService.getVisitDetail(claimParam.getVisitUUID());
-		System.out.println("Visit Details : "+InsuranceUtils.mapToJson(visitDetails));
 		period.setStart(new Date( visitDetails.getStartDateTime()));
 		if( visitDetails.getStopDateTime() != null) {
 			period.setEnd(new Date( visitDetails.getStopDateTime()));
 		} 
+		//Referal patients
+		InsuranceSummary insuranceDetails = bahmniApiService.getInsuranceDetail(claimParam.getPatientUUID());
 		
 		CodeableConcept typeValue = new CodeableConcept();
 		if (ImisConstants.CLAIM_VISIT_TYPE.OPD.equals(visitDetails.getVisitType()) || ImisConstants.CLAIM_VISIT_TYPE.IPD.equals(visitDetails.getVisitType())) {
@@ -133,6 +134,8 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		} else if (ImisConstants.CLAIM_VISIT_TYPE.EMERGENCY.equals(visitDetails.getVisitType())) {
 			typeValue.setText(ImisConstants.CLAIM_VISIT_TYPE.EMERGENCY_CODE);
 		} else if (ImisConstants.CLAIM_VISIT_TYPE.REFFERALS.equals(visitDetails.getVisitType())) {
+			typeValue.setText(ImisConstants.CLAIM_VISIT_TYPE.REFFERALS_CODE);
+		}else if (insuranceDetails.getValue().equals("true")) {
 			typeValue.setText(ImisConstants.CLAIM_VISIT_TYPE.REFFERALS_CODE);
 		}
 		claimReq.setType(typeValue);

@@ -1,16 +1,24 @@
 package org.bahmni.insurance.serviceImpl;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.bahmni.insurance.exception.ApiException;
 import org.bahmni.insurance.model.BahmniDiagnosis;
 import org.bahmni.insurance.model.ClaimLineItemResponse;
 import org.bahmni.insurance.model.Diagnosis;
+import org.bahmni.insurance.model.InsuranceSummary;
 import org.bahmni.insurance.model.VisitSummary;
 import org.bahmni.insurance.service.IApiClientService;
 import org.bahmni.insurance.utils.InsuranceUtils;
@@ -25,6 +33,17 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import springfox.documentation.spring.web.json.Json;
+
+
 
 @Component	
 public class BahmniOpenmrsApiClientServiceImpl implements IApiClientService {
@@ -87,6 +106,16 @@ public class BahmniOpenmrsApiClientServiceImpl implements IApiClientService {
 			throw new ApiException(" VisitSummary is null ");
 		}
 		return visit;
+	}
+	public InsuranceSummary getInsuranceDetail(String patientUUID) throws JsonParseException, JsonMappingException, IOException {
+		 String insuranceDetailsJson = sendGetRequest(openmrsAPIUrl+"/imis/"+patientUUID);
+			InsuranceSummary insurance = null;
+		if(insuranceDetailsJson != null){
+			insurance = InsuranceUtils.mapFromJson(insuranceDetailsJson, InsuranceSummary.class);
+		} else {
+			throw new ApiException(" Insurance summary is null ");
+		}
+		return insurance;
 	}
 	
 
