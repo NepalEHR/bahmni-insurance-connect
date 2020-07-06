@@ -4,6 +4,8 @@ import static org.apache.log4j.Logger.getLogger;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -253,13 +255,13 @@ public class RequestProcessor {
 
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/diagnosis/{patientUUID}/{visitUUID}/{fromDate}", produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, value = "/diagnosis/{patientUUID}", produces = "application/json")
 	@ResponseBody
 	public BahmniDiagnosis getDiagnosisDetails(HttpServletResponse response,@PathVariable("patientUUID")
-	String patientUUID,@PathVariable("visitUUID") String visitUUID,@PathVariable("fromDate")Date fromDate)
+	String patientUUID)
  throws JsonParseException, JsonMappingException, IOException {
-		logger.debug("get Diagnosis Detail : " + bahmniOpenmrsService.getDiagnosis(patientUUID ,visitUUID,fromDate));
-		return bahmniOpenmrsService.getDiagnosis(patientUUID,visitUUID,fromDate);
+		logger.debug("get Diagnosis Detail : " + bahmniOpenmrsService.getDiagnosisForOdoo(patientUUID));
+		return bahmniOpenmrsService.getDiagnosisForOdoo(patientUUID);
 
 	}
 	

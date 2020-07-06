@@ -133,6 +133,14 @@ public class BahmniOpenmrsApiClientServiceImpl implements IApiClientService {
 		return bahmniDiagnosisList;
 	}
 	
+	public BahmniDiagnosis getDiagnosisForOdoo(String patientUUID) throws JsonParseException, JsonMappingException, IOException {
+		String diagnosisJson =  sendGetRequest(openmrsAPIUrl+"/bahmnicore/diagnosis/search?patientUuid="+patientUUID);
+		BahmniDiagnosis bahmniDiagnosisList = null;
+			diagnosisJson = "{\"diagnosis\" : "+diagnosisJson+ "}";
+		bahmniDiagnosisList = InsuranceUtils.mapFromJson(diagnosisJson, BahmniDiagnosis.class);
+		return bahmniDiagnosisList;
+	}
+	
 	
 
 }
