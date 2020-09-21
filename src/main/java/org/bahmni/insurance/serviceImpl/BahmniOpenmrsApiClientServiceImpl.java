@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.commons.codec.binary.Base64;
 import org.bahmni.insurance.exception.ApiException;
 import org.bahmni.insurance.model.BahmniDiagnosis;
@@ -121,15 +123,26 @@ public class BahmniOpenmrsApiClientServiceImpl implements IApiClientService {
 
 	public BahmniDiagnosis getDiagnosis(String patientUUID, String visitUUID, Date fromDate) throws JsonParseException, JsonMappingException, IOException {
 		String diagnosisJson =  sendGetRequest(openmrsAPIUrl+"/bahmnicore/diagnosis/search?patientUuid="+patientUUID+"&visitUuid="+visitUUID);
+		if (diagnosisJson.contains("error")) {
+			throw new RuntimeException("No diagnosis recorded for this patient, Please check the information like patient uuid, visituuid");
+		}
 		BahmniDiagnosis bahmniDiagnosisList = null;
 		if(diagnosisJson != null && diagnosisJson.length() > 2){ //diagnosisJson contains atleast 2 chars []
 			diagnosisJson = "{\"diagnosis\" : "+diagnosisJson+ "}";
 		} else {
 			String fromDateStr = InsuranceUtils.convertBahmniDateStr(fromDate);
 			diagnosisJson =  sendGetRequest(openmrsAPIUrl+"/bahmnicore/diagnosis/search?patientUuid="+patientUUID+"&fromDate="+fromDateStr);
-			diagnosisJson = "{\"diagnosis\" : "+diagnosisJson+ "}";
+			if(diagnosisJson != null && diagnosisJson.length() > 2){ //diagnosisJson contains atleast 2 chars []
+				diagnosisJson = "{\"diagnosis\" : "+diagnosisJson+ "}";
+			} else {
+				throw new RuntimeException("No diagnosis recorded for this patient");
+			}
 		}
+		
 		bahmniDiagnosisList = InsuranceUtils.mapFromJson(diagnosisJson, BahmniDiagnosis.class);
+		if(bahmniDiagnosisList.getAdditionalProperties().get("error") != null) {
+			throw new RuntimeException("No diagnosis recorded for this patient");
+		}
 		return bahmniDiagnosisList;
 	}
 	
