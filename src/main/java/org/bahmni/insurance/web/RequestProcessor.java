@@ -255,13 +255,14 @@ public class RequestProcessor {
 
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/diagnosis/{patientUUID}", produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, value = "/diagnosis/patient/{patientUUID}/visit/{visitUUID}", produces = "application/json")
 	@ResponseBody
-	public BahmniDiagnosis getDiagnosisDetails(HttpServletResponse response,@PathVariable("patientUUID")
-	String patientUUID)
- throws JsonParseException, JsonMappingException, IOException {
-		logger.debug("get Diagnosis Detail : " + bahmniOpenmrsService.getDiagnosisForOdoo(patientUUID));
-		return bahmniOpenmrsService.getDiagnosisForOdoo(patientUUID);
+	public BahmniDiagnosis getDiagnosisDetails(HttpServletResponse response, @PathVariable("patientUUID") String patientUUID, @PathVariable("visitUUID")
+	String visitUUID) throws JsonParseException, JsonMappingException, IOException {
+		logger.debug("get Diagnosis Detail : " );
+		VisitSummary visitDetails = bahmniOpenmrsService.getVisitDetail(visitUUID);
+		BahmniDiagnosis bahmniDianosis  =  bahmniOpenmrsService.getDiagnosis(patientUUID, visitUUID, new Date( visitDetails.getStartDateTime()));
+		return bahmniDianosis;
 
 	}
 	
