@@ -4,6 +4,9 @@ import static org.apache.log4j.Logger.getLogger;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -105,7 +108,7 @@ public class RequestProcessor {
 	@RequestMapping(method = RequestMethod.GET, value = "/check/eligibility/{chfID}", produces = "application/json")
 	@ResponseBody
 	public EligibilityResponseModel checkEligibility(HttpServletResponse response, @PathVariable("chfID") String chfID)
-			throws RestClientException, URISyntaxException, DataFormatException, IOException {
+			throws RestClientException, URISyntaxException, DataFormatException, IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		logger.debug("checkEligibility : ");
 		
 		
@@ -128,7 +131,7 @@ public class RequestProcessor {
 	@RequestMapping(method = RequestMethod.GET, value = "get/insuree/{chfID}", produces = "application/json")
 	@ResponseBody
 	public InsureeModel getInsuree(HttpServletResponse response,@PathVariable("chfID") String chfID)
-			throws IOException {
+			throws IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		InsureeModel insureeModel = insuranceImplFactory
 				.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR, properties).getInsuree(chfID);
 		return insureeModel;
@@ -138,7 +141,7 @@ public class RequestProcessor {
 	@RequestMapping(method = RequestMethod.POST, value = "/resubmit/fhir", produces = "application/json")
 	@ResponseBody
 	public ClaimResponseModel resubmitClaimFhir(HttpServletResponse response, @RequestBody String claimFhirEdited)
-			throws RestClientException, URISyntaxException, DataFormatException, IOException {
+			throws RestClientException, URISyntaxException, DataFormatException, IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		//logger.error("submitClaim : "+InsuranceUtils.mapToJson(claimParams));
 
 		logger.error("claimRequest : "+claimFhirEdited);
@@ -157,7 +160,7 @@ public class RequestProcessor {
 	@RequestMapping(method = RequestMethod.POST, value = "/submit/claim", produces = "application/json")
 	@ResponseBody
 	public ClaimResponseModel submitClaim(HttpServletResponse response, @RequestBody ClaimParam claimParams)
-			throws RestClientException, URISyntaxException, DataFormatException, IOException {
+			throws RestClientException, URISyntaxException, DataFormatException, IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		logger.error("submitClaim : "+InsuranceUtils.mapToJson(claimParams));
 
 		Claim claimRequest = fhirConstructorService.constructFhirClaimRequest(claimParams);
@@ -183,7 +186,7 @@ public class RequestProcessor {
 	@RequestMapping(method = RequestMethod.GET, value = "get/claimresponse/{claimId}", produces = "application/json")
 	@ResponseBody
 	public ClaimResponseModel getClaimResponse(HttpServletResponse response,@PathVariable("claimId") String claimId)
-			throws IOException {
+			throws IOException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		//claimId = "980"; //TODO: remove hardcoded
 		ClaimResponseModel claimResponseModel = insuranceImplFactory
 				.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR, properties).getClaimResponse(claimId);
@@ -194,7 +197,7 @@ public class RequestProcessor {
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/openIMIS/login")
 	@ResponseBody
-	public String checkLogin(HttpServletResponse response) throws RestClientException, URISyntaxException {
+	public String checkLogin(HttpServletResponse response) throws RestClientException, URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		logger.debug("checkLogin");
 		return insuranceImplFactory.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR, properties).loginCheck();
 	}

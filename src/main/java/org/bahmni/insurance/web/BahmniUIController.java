@@ -3,6 +3,9 @@ package org.bahmni.insurance.web;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.validation.Valid;
 
@@ -69,7 +72,7 @@ public class BahmniUIController {
 	
 	@RequestMapping(value="/add-info", method = RequestMethod.POST)
 	public String showWelcomePage(@ModelAttribute @Valid Insurance insurance, BindingResult bindingResult, Model model,
-			@RequestParam String nhisNumber) throws IOException, RestClientException, FHIRException, URISyntaxException {
+			@RequestParam String nhisNumber) throws IOException, RestClientException, FHIRException, URISyntaxException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		if (bindingResult.hasErrors()) {
 			System.out.println("BINDING RESULT ERROR");
 			model.addAttribute("error", bindingResult.getAllErrors());

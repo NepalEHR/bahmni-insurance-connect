@@ -4,11 +4,26 @@ import static org.apache.log4j.Logger.getLogger;
 
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.net.ssl.SSLContext;
+
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.bahmni.insurance.AppProperties;
 import org.bahmni.insurance.ImisConstants;
 import org.bahmni.insurance.client.RestTemplateFactory;
@@ -50,6 +65,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -60,14 +76,15 @@ import ca.uhn.fhir.parser.IParser;
 
 @Component
 public class ImisRestClientServiceImpl extends AInsuranceClientService {
-	private final RestTemplate restTemplate = new RestTemplate();
+	private  RestTemplate restTemplate ;
 	private final IParser FhirParser = FhirContext.forDstu3().newJsonParser();
 	private final org.apache.log4j.Logger logger = getLogger(ImisRestClientServiceImpl.class);
 
 	private AppProperties properties;
 
-	public ImisRestClientServiceImpl(AppProperties prop) {
+	public ImisRestClientServiceImpl(AppProperties prop) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		properties = prop;
+		 restTemplate = new RestTemplate(getClientHttpRequestFactory());
 		// restTemplate = getRestClient();
 	}
 
@@ -90,7 +107,7 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 
 	private ResponseEntity<String> sendPostRequest(String requestJson, String url) {
 
-		HttpHeaders headers = createHeaders(properties.imisUser, properties.imisPassword);
+		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		headers.add("Content-Type", "application/json");
 		headers.add("remote-user", properties.openImisRemoteUser);
@@ -336,4 +353,33 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		logger.error("After insuree detail" + insureeModel);
 		return insureeModel;
 		}
+	
+	 public HttpComponentsClientHttpRequestFactory getClientHttpRequestFactory() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+	        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory
+	                = new HttpComponentsClientHttpRequestFactory();
+	        clientHttpRequestFactory.setHttpClient(httpClient());
+	        return clientHttpRequestFactory;
+	    }
+
+	    public HttpClient httpClient() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+	        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+	        credentialsProvider.setCredentials(AuthScope.ANY,
+	                new UsernamePasswordCredentials(properties.imisUser, properties.imisPassword));
+
+	        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+
+	        SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom()
+	                .loadTrustMaterial(null, acceptingTrustStrategy)
+	                .build();
+
+	        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+
+	        HttpClient client = HttpClientBuilder
+	                .create()
+	                .setSSLSocketFactory(csf)
+	                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+	                .setDefaultCredentialsProvider(credentialsProvider)
+	                .build();
+	        return client;
+	    }
 }
