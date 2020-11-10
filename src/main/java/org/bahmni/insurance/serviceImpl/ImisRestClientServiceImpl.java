@@ -314,8 +314,11 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	@Override
 	public ClaimResponseModel getClaimResponse(String claimID) {
 		String claimResponseStr = sendGetRequest(properties.imisUrl + "/ClaimResponse?identifier=" + claimID);
-		ClaimResponse claimResponse = (ClaimResponse) FhirParser.parseResource(claimResponseStr);
-		return populateClaimRespModel(claimResponse, null);
+		//ClaimResponse claimResponse = (ClaimResponse) FhirParser.parseResource(claimResponseStr);
+		Bundle bundle = (Bundle)FhirParser.parseResource(claimResponseStr);
+		ClaimResponse claimResponseInput =(ClaimResponse) bundle.getEntry().get(0).getResource();
+
+		return populateClaimRespModel(claimResponseInput, null);
 
 	}
 
