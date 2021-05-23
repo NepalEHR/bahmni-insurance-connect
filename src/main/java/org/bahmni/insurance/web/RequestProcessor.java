@@ -57,7 +57,7 @@ public class RequestProcessor {
 	private final IOpenmrsOdooService odooService;
 	private final IFhirResourceDaoService fhirDaoService;
 	private final FInsuranceServiceFactory insuranceImplFactory;
-	private final IParser FhirParser = FhirContext.forDstu3().newJsonParser();
+	private final IParser FhirParser = FhirContext.forR4().newJsonParser();
 
 	private final AppProperties properties;
 
