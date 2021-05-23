@@ -19,17 +19,14 @@ import org.bahmni.insurance.model.ClaimTrackingModel;
 import org.bahmni.insurance.model.EligibilityBalance;
 import org.bahmni.insurance.model.EligibilityResponseModel;
 import org.bahmni.insurance.service.AInsuranceClientService;
-import org.hl7.fhir.dstu3.model.Claim;
-import org.hl7.fhir.dstu3.model.ClaimResponse;
-import org.hl7.fhir.dstu3.model.ClaimResponse.AdjudicationComponent;
-import org.hl7.fhir.dstu3.model.ClaimResponse.ItemComponent;
-import org.hl7.fhir.dstu3.model.EligibilityRequest;
-import org.hl7.fhir.dstu3.model.EligibilityResponse;
-import org.hl7.fhir.dstu3.model.EligibilityResponse.InsuranceComponent;
-import org.hl7.fhir.dstu3.model.Task;
+import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.ClaimResponse;
+import org.hl7.fhir.r4.model.ClaimResponse.AdjudicationComponent;
+import org.hl7.fhir.r4.model.ClaimResponse.ItemComponent;
+import org.hl7.fhir.r4.model.CoverageEligibilityResponse.InsuranceComponent;
 import org.hl7.fhir.exceptions.FHIRException;/*
-												import org.openmrs.module.fhir.api.client.ClientHttpEntity;
-												import org.openmrs.module.fhir.api.helper.ClientHelper;*/
+import org.openmrs.module.fhir.api.client.ClientHttpEntity;
+import org.openmrs.module.fhir.api.helper.ClientHelper;*/
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -46,7 +43,7 @@ import ch.qos.logback.core.net.SyslogOutputStream;
 @Component
 public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	private final RestTemplate restTemplate = new RestTemplate();
-	private final IParser FhirParser = FhirContext.forDstu3().newJsonParser();
+	private final IParser FhirParser = FhirContext.forR4().newJsonParser();
 	private final org.apache.log4j.Logger logger = getLogger(ImisRestClientServiceImpl.class);
 
 	private AppProperties properties;
@@ -131,11 +128,11 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	}
 
 	@Override
-	public EligibilityResponseModel getElibilityResponse(EligibilityRequest eligbilityRequest)
+	public EligibilityResponseModel getElibilityResponse(CoverageEligibilityRequest eligbilityRequest)
 			throws RestClientException, URISyntaxException, FHIRException {
 		String jsonEligRequest = FhirParser.encodeResourceToString(eligbilityRequest);
 		ResponseEntity<String> responseObject = sendPostRequest(jsonEligRequest, properties.openImisFhirApiElig);
-		EligibilityResponse eligibilityResponse = (EligibilityResponse) FhirParser
+		CoverageEligibilityResponse eligibilityResponse = (CoverageEligibilityResponse) FhirParser
 				.parseResource(responseObject.getBody());
 		return populateEligibilityRespModel(eligibilityResponse);
 	}
@@ -158,19 +155,21 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 
 	private ClaimResponseModel populateClaimRespModel(ClaimResponse claimResponse) {
 		ClaimResponseModel clmRespModel = new ClaimResponseModel();
-		
-		clmRespModel.setClaimStatus(claimResponse.getOutcome().getText());
+
+		clmRespModel.setClaimStatus(claimResponse.getOutcome().toString());
+//		clmRespModel.setClaimStatus(claimResponse.getOutcome().getText();
 		clmRespModel.setClaimId(claimResponse.getId());
-		
-		if(ImisConstants.CLAIM_OUTCOME.REJECTED.getOutCome().equals(claimResponse.getOutcome().getText())) {
-			clmRespModel.setApprovedTotal(claimResponse.getTotalBenefit().getValue());
+
+		if(ImisConstants.CLAIM_OUTCOME.REJECTED.getOutCome().equals(claimResponse.getOutcome().toString())) {
+			clmRespModel.setApprovedTotal(claimResponse.getTotal().get(0).getAmount().getValue());
 			clmRespModel.setDateProcessed(claimResponse.getPayment().getDate());
 		}
 
 		List<ClaimLineItemResponse> claimLineItems = new ArrayList<>();
 		for (ItemComponent responseItem : claimResponse.getItem()) {
 			ClaimLineItemResponse claimItem = new ClaimLineItemResponse();
-			claimItem.setSequence(responseItem.getSequenceLinkIdElement().getValue());
+//			claimItem.setSequence(responseItem.getSequenceLinkIdElement().getValue());
+			claimItem.setSequence(responseItem.getItemSequenceElement().getValue());
 
 			for (AdjudicationComponent adj : responseItem.getAdjudication()) {
 				if(ImisConstants.CLAIM_ADJ_CATEGORY.GENERAL.equals(adj.getCategory().getText())){
@@ -184,7 +183,7 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 					claimItem.setRejectedReason(adj.getReason().getCoding().get(0).getCode());
 				}
 			}
-			claimItem.setSequence(responseItem.getSequenceLinkId());
+//			claimItem.setSequence(responseItem.getSequenceLinkId());
 			claimLineItems.add(claimItem);
 			
 		}
@@ -195,12 +194,12 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	@Override
 	public EligibilityResponseModel getDummyEligibilityResponse() throws FHIRException {
 		String eligibilityResponseBody = sendGetRequest(properties.dummyEligibiltyResponseUrl);
-		EligibilityResponse dummyEligibiltyResponse = (EligibilityResponse) FhirParser
+		CoverageEligibilityResponse dummyEligibiltyResponse = (CoverageEligibilityResponse) FhirParser
 				.parseResource(eligibilityResponseBody);
 		return populateEligibilityRespModel(dummyEligibiltyResponse);
 	}
 
-	private EligibilityResponseModel populateEligibilityRespModel(EligibilityResponse eligibilityResponse)
+	private EligibilityResponseModel populateEligibilityRespModel(CoverageEligibilityResponse eligibilityResponse)
 			throws FHIRException {
 		EligibilityResponseModel eligRespModel = new EligibilityResponseModel();
 		eligRespModel.setNhisId(eligibilityResponse.getId());
@@ -210,11 +209,15 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		List<EligibilityBalance> eligibilityBalance = new ArrayList<>();
 		for (InsuranceComponent responseItem : eligibilityResponse.getInsurance()) {
 			EligibilityBalance eligBalance = new EligibilityBalance();
-			eligBalance.setCode(responseItem.getBenefitBalance().get(0).getTerm().getCoding().get(0).getCode());
-			eligBalance.setTerm(responseItem.getBenefitBalance().get(0).getFinancial().get(0).getType().getCoding()
-					.get(0).getCode());
-			eligBalance.setBenefitBalance(
-					responseItem.getBenefitBalance().get(0).getFinancial().get(0).getAllowedMoney().getValue());
+
+//			eligBalance.setCode(responseItem.getBenefitBalance().get(0).getTerm().getCoding().get(0).getCode());
+//			eligBalance.setTerm(responseItem.getBenefitBalance().get(0).getFinancial().get(0).getType().getCoding()
+//					.get(0).getCode());
+//			eligBalance.setBenefitBalance(
+//					responseItem.getBenefitBalance().get(0).getFinancial().get(0).getAllowedMoney().getValue());
+			eligBalance.setCode(responseItem.getItem().get(0).getTerm().getCoding().get(0).getCode());
+			eligBalance.setTerm(responseItem.getItem().get(0).getBenefit().get(0).getType().getCoding().get(0).getCode());
+			eligBalance.setBenefitBalance(responseItem.getItem().get(0).getBenefit().get(0).getAllowedMoney().getValue());
 			eligibilityBalance.add(eligBalance);
 			// nhisId
 			// patientId

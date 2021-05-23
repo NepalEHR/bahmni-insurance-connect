@@ -6,11 +6,11 @@ import org.bahmni.insurance.client.ClientHelperFactory;
 import org.bahmni.insurance.model.ClaimResponseModel;
 import org.bahmni.insurance.model.ClaimTrackingModel;
 import org.bahmni.insurance.model.EligibilityResponseModel;
-import org.hl7.fhir.dstu3.model.Claim;
-import org.hl7.fhir.dstu3.model.ClaimResponse;
-import org.hl7.fhir.dstu3.model.EligibilityRequest;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.Task;
+import org.hl7.fhir.r4.model.Claim;
+import org.hl7.fhir.r4.model.ClaimResponse;
+import org.hl7.fhir.r4.model.CoverageEligibilityRequest;
+import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.Task;
 import org.hl7.fhir.exceptions.FHIRException;
 /*import org.openmrs.module.fhir.api.helper.ClientHelper;*/
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public abstract class AInsuranceClientService {
 */
 	public abstract ClaimResponseModel submitClaim(Claim claimRequest) throws RestClientException, URISyntaxException;
 
-	public abstract EligibilityResponseModel getElibilityResponse(EligibilityRequest eligbilityRequest)
+	public abstract EligibilityResponseModel getElibilityResponse(CoverageEligibilityRequest eligbilityRequest)
 			throws RestClientException, URISyntaxException, FHIRException;
 
 	public abstract ClaimResponse getClaimStatus(Task claimStatusRequest);

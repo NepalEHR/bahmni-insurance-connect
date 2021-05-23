@@ -7,9 +7,9 @@ import java.io.IOException;
 import org.bahmni.insurance.model.ClaimParam;
 import org.bahmni.insurance.serviceImpl.FhirConstructorServiceImpl;
 import org.bahmni.insurance.test.AbstractWebTest;
-import org.hl7.fhir.dstu3.model.Claim;
-import org.hl7.fhir.dstu3.model.EligibilityRequest;
-import org.hl7.fhir.dstu3.model.Task;
+import org.hl7.fhir.r4.model.Claim;
+import org.hl7.fhir.r4.model.CoverageEligibilityRequest;
+import org.hl7.fhir.r4.model.Task;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,7 +47,7 @@ public class TestFhirConstructorService extends AbstractWebTest {
 
 	@Test
 	public void constructFhirEligRequestTest() throws IOException {
-		EligibilityRequest eligReqSample = fhirConstructorServiceImpl.constructFhirEligibilityRequest("insurance-12321312");
+		CoverageEligibilityRequest eligReqSample = fhirConstructorServiceImpl.constructFhirEligibilityRequest("insurance-12321312");
 		String eligReqSampleStr = FhirParser.encodeResourceToString(eligReqSample);
 		assertTrue(fhirConstructorServiceImpl.validateRequest(eligReqSampleStr));
 

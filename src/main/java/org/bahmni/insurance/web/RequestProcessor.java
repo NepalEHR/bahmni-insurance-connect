@@ -25,10 +25,10 @@ import org.bahmni.insurance.service.IOpenmrsOdooService;
 import org.bahmni.insurance.serviceImpl.FhirConstructorServiceImpl;
 import org.bahmni.insurance.serviceImpl.OpenmrsOdooServiceImpl;
 import org.bahmni.insurance.utils.InsuranceUtils;
-import org.hl7.fhir.dstu3.model.Claim;
-import org.hl7.fhir.dstu3.model.ClaimResponse;
-import org.hl7.fhir.dstu3.model.EligibilityRequest;
-import org.hl7.fhir.dstu3.model.Task;
+import org.hl7.fhir.r4.model.Claim;
+import org.hl7.fhir.r4.model.ClaimResponse;
+import org.hl7.fhir.r4.model.CoverageEligibilityRequest;
+import org.hl7.fhir.r4.model.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -82,7 +82,7 @@ public class RequestProcessor {
 	public String getEligibilityResponse(HttpServletResponse response, @PathVariable("InsureeId") String InsureeId)
 			throws DataFormatException, IOException {
 		logger.debug("eligibityResponse");
-		EligibilityRequest eligReq = fhirConstructorService.constructFhirEligibilityRequest(InsureeId);
+		CoverageEligibilityRequest eligReq = fhirConstructorService.constructFhirEligibilityRequest(InsureeId);
 		fhirConstructorService.validateRequest(FhirParser.encodeResourceToString(eligReq));
 		EligibilityResponseModel eligibilityResponse = insuranceImplFactory
 				.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR, properties).getDummyEligibilityResponse();

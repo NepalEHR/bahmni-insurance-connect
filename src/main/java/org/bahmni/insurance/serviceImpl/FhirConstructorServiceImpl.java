@@ -17,20 +17,22 @@ import org.bahmni.insurance.model.VisitSummary;
 import org.bahmni.insurance.service.AFhirConstructorService;
 import org.bahmni.insurance.utils.InsuranceUtils;
 import org.bahmni.insurance.validation.FhirInstanceValidator;
-import org.hl7.fhir.dstu3.model.Claim;
-import org.hl7.fhir.dstu3.model.Claim.ItemComponent;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.EligibilityRequest;
-import org.hl7.fhir.dstu3.model.EligibilityRequest.EligibilityRequestStatus;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Identifier.IdentifierUse;
-import org.hl7.fhir.dstu3.model.Money;
-import org.hl7.fhir.dstu3.model.Period;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.SimpleQuantity;
-import org.hl7.fhir.dstu3.model.Task;
-import org.hl7.fhir.dstu3.model.Task.TaskStatus;
+import org.hl7.fhir.r4.model.Claim;
+import org.hl7.fhir.r4.model.Claim.ItemComponent;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.CoverageEligibilityRequest;
+import org.hl7.fhir.r4.model.CoverageEligibilityRequest.EligibilityRequestStatus;
+//import org.hl7.fhir.r4.model.EligibilityRequest;
+//import org.hl7.fhir.r4.model.EligibilityRequest.EligibilityRequestStatus;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
+import org.hl7.fhir.r4.model.Money;
+import org.hl7.fhir.r4.model.Period;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.SimpleQuantity;
+import org.hl7.fhir.r4.model.Task;
+import org.hl7.fhir.r4.model.Task.TaskStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -177,7 +179,7 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 			CodeableConcept codeConceptService = new CodeableConcept();
 			codeConceptService.setText(claimItem.getCode());
-			itemComponent.setService(codeConceptService);
+			itemComponent.setServiced(codeConceptService);
 
 			Money value = new Money();
 			value.setValue(claimItem.getUnitPrice());
@@ -188,9 +190,9 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 	}
 
 	@Override
-	public EligibilityRequest constructFhirEligibilityRequest(String insuranceID) throws IOException {
+	public CoverageEligibilityRequest constructFhirEligibilityRequest(String insuranceID) throws IOException {
 
-		EligibilityRequest eligibilityRequest = new EligibilityRequest();
+		CoverageEligibilityRequest eligibilityRequest = new CoverageEligibilityRequest();
 
 		List<Identifier> identifierList = new ArrayList<>();
 		Identifier identifier = new Identifier();
@@ -205,13 +207,13 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		patientReference.setReference("Patient/" + insuranceID);
 		eligibilityRequest.setPatient(patientReference);
 
-		Reference referenceOrg = new Reference();
-		referenceOrg.setReference("Organization/1");
-		eligibilityRequest.setOrganization(referenceOrg);
-
-		Reference referenceInsurer = new Reference();
-		referenceInsurer.setReference("Organization/2");
-		eligibilityRequest.setInsurer(referenceInsurer);
+//		Reference referenceOrg = new Reference();
+//		referenceOrg.setReference("Organization/1");
+//		eligibilityRequest.setOrganization(referenceOrg);
+//
+//		Reference referenceInsurer = new Reference();
+//		referenceInsurer.setReference("Organization/2");
+//		eligibilityRequest.setInsurer(referenceInsurer);
 
 		return eligibilityRequest;
 	}
@@ -238,7 +240,7 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 	@Override
 	public boolean validateRequest(String eligibilityRequestValidation) throws IOException {
-		FhirContext ctx = FhirContext.forDstu3();
+		FhirContext ctx = FhirContext.forR4();
 
 		FhirValidator validator = ctx.newValidator();
 		FhirInstanceValidator instanceValidator = new FhirInstanceValidator();
