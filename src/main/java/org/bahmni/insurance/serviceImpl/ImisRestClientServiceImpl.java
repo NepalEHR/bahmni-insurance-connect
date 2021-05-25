@@ -127,15 +127,7 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		return populateClaimRespModel(claimResponse);
 	}
 
-	@Override
-	public EligibilityResponseModel getElibilityResponse(CoverageEligibilityRequest eligbilityRequest)
-			throws RestClientException, URISyntaxException, FHIRException {
-		String jsonEligRequest = FhirParser.encodeResourceToString(eligbilityRequest);
-		ResponseEntity<String> responseObject = sendPostRequest(jsonEligRequest, properties.imisUrl+properties.openImisFhirApiElig);
-		CoverageEligibilityResponse eligibilityResponse = (CoverageEligibilityResponse) FhirParser
-				.parseResource(responseObject.getBody());
-		return populateEligibilityRespModel(eligibilityResponse);
-	}
+
 
 	@Override
 	public ClaimResponse getClaimStatus(Task claimStatusRequest) {
@@ -191,14 +183,23 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		return clmRespModel;
 	}
 
-//	@Override
-//	public EligibilityResponseModel getDummyEligibilityResponse() throws FHIRException {
-//		String eligibilityResponseBody = sendGetRequest(properties.dummyEligibiltyResponseUrl);
-////		String eligibilityResponseBody = sendGetRequest(properties.imisUrl+properties.openImisFhirApiElig);
-//		CoverageEligibilityResponse dummyEligibiltyResponse = (CoverageEligibilityResponse) FhirParser
-//				.parseResource(eligibilityResponseBody);
-//		return populateEligibilityRespModel(dummyEligibiltyResponse);
-//	}
+	@Override
+	public EligibilityResponseModel getDummyEligibilityResponse() throws FHIRException {
+		String eligibilityResponseBody = sendGetRequest(properties.dummyEligibiltyResponseUrl);
+		CoverageEligibilityResponse dummyEligibiltyResponse = (CoverageEligibilityResponse) FhirParser
+				.parseResource(eligibilityResponseBody);
+		return populateEligibilityRespModel(dummyEligibiltyResponse);
+	}
+
+	@Override
+	public EligibilityResponseModel getElibilityResponse(CoverageEligibilityRequest eligbilityRequest)
+			throws RestClientException, URISyntaxException, FHIRException {
+		String jsonEligRequest = FhirParser.encodeResourceToString(eligbilityRequest);
+		ResponseEntity<String> responseObject = sendPostRequest(jsonEligRequest, properties.imisUrl+properties.openImisFhirApiElig);
+		CoverageEligibilityResponse eligibilityResponse = (CoverageEligibilityResponse) FhirParser
+				.parseResource(responseObject.getBody());
+		return populateEligibilityRespModel(eligibilityResponse);
+	}
 
 	private EligibilityResponseModel populateEligibilityRespModel(CoverageEligibilityResponse eligibilityResponse)
 			throws FHIRException {
@@ -255,11 +256,6 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	@Override
 	public String loginCheck() {
 		return sendGetRequest(properties.imisUrl);
-	}
-
-	@Override
-	public EligibilityResponseModel getDummyEligibilityResponse() throws FHIRException {
-		return null;
 	}
 
 }
