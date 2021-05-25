@@ -217,8 +217,8 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 //					.get(0).getCode());
 //			eligBalance.setBenefitBalance(
 //					responseItem.getBenefitBalance().get(0).getFinancial().get(0).getAllowedMoney().getValue());
-			eligBalance.setCode(responseItem.getItem().get(0).getTerm().getCoding().get(0).getCode());
-			eligBalance.setTerm(responseItem.getItem().get(0).getBenefit().get(0).getType().getCoding().get(0).getCode());
+//			eligBalance.setCode(responseItem.getItem().get(0).getTerm().getCoding().get(0).getCode());
+//			eligBalance.setTerm(responseItem.getItem().get(0).getBenefit().get(0).getType().getCoding().get(0).getCode());
 			eligBalance.setBenefitBalance(responseItem.getItem().get(0).getBenefit().get(0).getAllowedMoney().getValue());
 			eligibilityBalance.add(eligBalance);
 			// nhisId
