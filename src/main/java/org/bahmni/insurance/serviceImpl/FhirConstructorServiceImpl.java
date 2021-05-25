@@ -201,7 +201,7 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 //		identifierList.add(identifier);
 //		eligibilityRequest.setIdentifier(identifierList);
 //
-//		eligibilityRequest.setStatus(EligibilityRequestStatus.ACTIVE);
+		eligibilityRequest.setStatus(EligibilityRequestStatus.ACTIVE);
 
 		Reference patientReference = new Reference();
 		patientReference.setReference("Patient/" + insuranceID);
