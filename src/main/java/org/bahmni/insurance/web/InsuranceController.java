@@ -67,6 +67,7 @@ public class InsuranceController {
 //			EligibilityResponseModel eligibilityResponse = insuranceImplFactory.getInsuranceServiceImpl(100, properties)
 //					.getDummyEligibilityResponse();
 			CoverageEligibilityRequest eligReq = fhirConstructorService.constructFhirEligibilityRequest(nhisNumber);
+			System.out.println(eligReq);
 			EligibilityResponseModel eligibilityResponse = insuranceImplFactory.getInsuranceServiceImpl(100, properties)
 					.getElibilityResponse(eligReq);
 
