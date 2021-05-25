@@ -191,14 +191,14 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		return clmRespModel;
 	}
 
-	@Override
-	public EligibilityResponseModel getDummyEligibilityResponse() throws FHIRException {
+//	@Override
+//	public EligibilityResponseModel getDummyEligibilityResponse() throws FHIRException {
 //		String eligibilityResponseBody = sendGetRequest(properties.dummyEligibiltyResponseUrl);
-		String eligibilityResponseBody = sendGetRequest(properties.imisUrl+properties.openImisFhirApiElig);
-		CoverageEligibilityResponse dummyEligibiltyResponse = (CoverageEligibilityResponse) FhirParser
-				.parseResource(eligibilityResponseBody);
-		return populateEligibilityRespModel(dummyEligibiltyResponse);
-	}
+////		String eligibilityResponseBody = sendGetRequest(properties.imisUrl+properties.openImisFhirApiElig);
+//		CoverageEligibilityResponse dummyEligibiltyResponse = (CoverageEligibilityResponse) FhirParser
+//				.parseResource(eligibilityResponseBody);
+//		return populateEligibilityRespModel(dummyEligibiltyResponse);
+//	}
 
 	private EligibilityResponseModel populateEligibilityRespModel(CoverageEligibilityResponse eligibilityResponse)
 			throws FHIRException {
@@ -255,6 +255,11 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	@Override
 	public String loginCheck() {
 		return sendGetRequest(properties.imisUrl);
+	}
+
+	@Override
+	public EligibilityResponseModel getDummyEligibilityResponse() throws FHIRException {
+		return null;
 	}
 
 }
