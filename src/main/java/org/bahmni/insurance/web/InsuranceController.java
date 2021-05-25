@@ -73,13 +73,13 @@ public class InsuranceController {
 
 			// String nhisId = eligibilityResponse.getNhisId();
 			String patientId = eligibilityResponse.getPatientId();
-			String status = eligibilityResponse.getStatus();
+//			String status = eligibilityResponse.getStatus();
 			BigDecimal benefitBalance = eligibilityResponse.getEligibilityBalance().get(0).getBenefitBalance();
 			String code = eligibilityResponse.getEligibilityBalance().get(0).getCode();
 			String term = eligibilityResponse.getEligibilityBalance().get(0).getTerm();
 
 			model.addAttribute("patientId", patientId);
-			model.addAttribute("status", status);
+//			model.addAttribute("status", status);
 			model.addAttribute("benefitBalance", benefitBalance);
 			model.addAttribute("code", code);
 			model.addAttribute("term", term);
