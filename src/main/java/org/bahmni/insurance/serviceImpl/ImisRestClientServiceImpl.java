@@ -193,7 +193,8 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 
 	@Override
 	public EligibilityResponseModel getDummyEligibilityResponse() throws FHIRException {
-		String eligibilityResponseBody = sendGetRequest(properties.dummyEligibiltyResponseUrl);
+//		String eligibilityResponseBody = sendGetRequest(properties.dummyEligibiltyResponseUrl);
+		String eligibilityResponseBody = sendGetRequest(properties.imisUrl+properties.openImisFhirApiElig);
 		CoverageEligibilityResponse dummyEligibiltyResponse = (CoverageEligibilityResponse) FhirParser
 				.parseResource(eligibilityResponseBody);
 		return populateEligibilityRespModel(dummyEligibiltyResponse);
