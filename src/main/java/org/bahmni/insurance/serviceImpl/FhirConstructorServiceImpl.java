@@ -194,14 +194,14 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 		CoverageEligibilityRequest eligibilityRequest = new CoverageEligibilityRequest();
 
-		List<Identifier> identifierList = new ArrayList<>();
-		Identifier identifier = new Identifier();
-		identifier.setSystem("SenderID");
-		identifier.setValue(insuranceID);
-		identifierList.add(identifier);
-		eligibilityRequest.setIdentifier(identifierList);
-
-		eligibilityRequest.setStatus(EligibilityRequestStatus.ACTIVE);
+//		List<Identifier> identifierList = new ArrayList<>();
+//		Identifier identifier = new Identifier();
+//		identifier.setSystem("SenderID");
+//		identifier.setValue(insuranceID);
+//		identifierList.add(identifier);
+//		eligibilityRequest.setIdentifier(identifierList);
+//
+//		eligibilityRequest.setStatus(EligibilityRequestStatus.ACTIVE);
 
 		Reference patientReference = new Reference();
 		patientReference.setReference("Patient/" + insuranceID);
