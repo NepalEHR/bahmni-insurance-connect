@@ -80,18 +80,19 @@ public class RequestProcessor {
 	@RequestMapping(method = RequestMethod.GET, value = "/get/eligibilityResponse/{InsureeId}", produces = "application/json")
 	@ResponseBody
 	public String getEligibilityResponse(HttpServletResponse response, @PathVariable("InsureeId") String InsureeId)
-			throws DataFormatException, IOException {
+			throws DataFormatException, IOException, URISyntaxException {
 		logger.debug("eligibityResponse");
 		CoverageEligibilityRequest eligReq = fhirConstructorService.constructFhirEligibilityRequest(InsureeId);
 		fhirConstructorService.validateRequest(FhirParser.encodeResourceToString(eligReq));
 		EligibilityResponseModel eligibilityResponse = insuranceImplFactory
-				.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR, properties).getDummyEligibilityResponse();
+				.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR, properties).getElibilityResponse(eligReq);
 
 		/*
 		 * EligibilityResponseModel eligibilityResponse =
 		 * insuranceImplFactory.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR,
 		 * properties).getElibilityResponse(eligReq);
 		 */
+		logger.debug("eligibityResponse: "+InsuranceUtils.mapToJson(eligibilityResponse));
 		return InsuranceUtils.mapToJson(eligibilityResponse);
 		//return gson.toJson(eligibilityResponse);
 

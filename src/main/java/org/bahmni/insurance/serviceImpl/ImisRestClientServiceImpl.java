@@ -131,7 +131,7 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	public EligibilityResponseModel getElibilityResponse(CoverageEligibilityRequest eligbilityRequest)
 			throws RestClientException, URISyntaxException, FHIRException {
 		String jsonEligRequest = FhirParser.encodeResourceToString(eligbilityRequest);
-		ResponseEntity<String> responseObject = sendPostRequest(jsonEligRequest, properties.openImisFhirApiElig);
+		ResponseEntity<String> responseObject = sendPostRequest(jsonEligRequest, properties.imisUrl+properties.openImisFhirApiElig);
 		CoverageEligibilityResponse eligibilityResponse = (CoverageEligibilityResponse) FhirParser
 				.parseResource(responseObject.getBody());
 		return populateEligibilityRespModel(eligibilityResponse);
