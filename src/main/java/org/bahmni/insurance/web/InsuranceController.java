@@ -1,6 +1,8 @@
 package org.bahmni.insurance.web;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 
 import javax.validation.Valid;
 
@@ -9,9 +11,11 @@ import org.bahmni.insurance.client.RestTemplateFactory;
 import org.bahmni.insurance.dao.FhirResourceDaoServiceImpl;
 import org.bahmni.insurance.model.EligibilityResponseModel;
 import org.bahmni.insurance.model.Insurance;
+import org.bahmni.insurance.service.AFhirConstructorService;
 import org.bahmni.insurance.service.FInsuranceServiceFactory;
 import org.bahmni.insurance.serviceImpl.FhirConstructorServiceImpl;
 import org.bahmni.insurance.serviceImpl.OpenmrsOdooServiceImpl;
+import org.hl7.fhir.r4.model.CoverageEligibilityRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class InsuranceController {
 
 	private final FInsuranceServiceFactory insuranceImplFactory;
+	private final AFhirConstructorService fhirConstructorService;
 	private final AppProperties properties;
 
 	@InitBinder
@@ -39,6 +44,7 @@ public class InsuranceController {
 	public InsuranceController(FhirConstructorServiceImpl fhirConstructorServiceImpl,
 			OpenmrsOdooServiceImpl openmrsOdooServiceImpl, FhirResourceDaoServiceImpl fhirServiceImpl,
 			FInsuranceServiceFactory insuranceImplFactory, RestTemplateFactory restFactory, AppProperties props) {
+		this.fhirConstructorService = fhirConstructorServiceImpl;
 		this.insuranceImplFactory = insuranceImplFactory;
 		this.properties = props;
 
@@ -52,14 +58,18 @@ public class InsuranceController {
 
 	@RequestMapping(value = "/add-info", method = RequestMethod.POST)
 	public String showWelcomePage(@ModelAttribute @Valid Insurance insurance, BindingResult bindingResult, Model model,
-			@RequestParam String nhisNumber, @RequestParam Boolean isMember) {
+			@RequestParam String nhisNumber, @RequestParam Boolean isMember) throws IOException, URISyntaxException {
 		if (bindingResult.hasErrors()) {
 			System.out.println("BINDING RESULT ERROR");
 			model.addAttribute("error", bindingResult.getAllErrors());
 			return "error-page";
 		} else {
+//			EligibilityResponseModel eligibilityResponse = insuranceImplFactory.getInsuranceServiceImpl(100, properties)
+//					.getDummyEligibilityResponse();
+			CoverageEligibilityRequest eligReq = fhirConstructorService.constructFhirEligibilityRequest(nhisNumber);
 			EligibilityResponseModel eligibilityResponse = insuranceImplFactory.getInsuranceServiceImpl(100, properties)
-					.getDummyEligibilityResponse();
+					.getElibilityResponse(eligReq);
+
 			// String nhisId = eligibilityResponse.getNhisId();
 			String patientId = eligibilityResponse.getPatientId();
 			String status = eligibilityResponse.getStatus();
