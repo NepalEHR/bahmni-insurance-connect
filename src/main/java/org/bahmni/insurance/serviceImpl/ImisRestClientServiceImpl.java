@@ -206,7 +206,7 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		EligibilityResponseModel eligRespModel = new EligibilityResponseModel();
 		eligRespModel.setNhisId(eligibilityResponse.getId());
 		eligRespModel.setPatientId(eligibilityResponse.getPatient().getReference());
-		eligRespModel.setStatus(eligibilityResponse.getStatus().toCode());
+//		eligRespModel.setStatus(eligibilityResponse.getStatus().toCode());
 
 		List<EligibilityBalance> eligibilityBalance = new ArrayList<>();
 		for (InsuranceComponent responseItem : eligibilityResponse.getInsurance()) {
