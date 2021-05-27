@@ -74,15 +74,17 @@ public class InsuranceController {
 			String patientId = eligibilityResponse.getPatientId();
 			String status = eligibilityResponse.getStatus();
 			BigDecimal benefitBalance = BigDecimal.ZERO;
+			String code= "-";
+			String term = "-";
 			try {
 				benefitBalance = eligibilityResponse.getEligibilityBalance().get(0).getBenefitBalance();
 			}catch(Exception e){}
 			try{
-			String code = eligibilityResponse.getEligibilityBalance().get(0).getCode();
-			}catch(Exception e){String code = "-";}
+				code = eligibilityResponse.getEligibilityBalance().get(0).getCode();
+			}catch(Exception e){}
 			try{
-			String term = eligibilityResponse.getEligibilityBalance().get(0).getTerm();
-			}catch(Exception e){String term = "-";}
+				term = eligibilityResponse.getEligibilityBalance().get(0).getTerm();
+			}catch(Exception e){}
 
 			model.addAttribute("patientId", patientId);
 			model.addAttribute("status", status);
