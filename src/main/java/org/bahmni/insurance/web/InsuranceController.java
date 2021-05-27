@@ -71,11 +71,12 @@ public class InsuranceController {
 					.getElibilityResponse(eligReq);
 
 			// String nhisId = eligibilityResponse.getNhisId();
-			System.out.println(eligibilityResponse.getEligibilityBalance().get(0).getBenefitBalance());
 			String patientId = eligibilityResponse.getPatientId();
 			String status = eligibilityResponse.getStatus();
-
-			BigDecimal benefitBalance = eligibilityResponse.getEligibilityBalance().get(0).getBenefitBalance();
+			BigDecimal benefitBalance = BigDecimal.ZERO;
+			try {
+				benefitBalance = eligibilityResponse.getEligibilityBalance().get(0).getBenefitBalance();
+			}catch(Exception e){}
 			String code = eligibilityResponse.getEligibilityBalance().get(0).getCode();
 			String term = eligibilityResponse.getEligibilityBalance().get(0).getTerm();
 

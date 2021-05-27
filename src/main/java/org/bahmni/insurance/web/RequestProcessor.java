@@ -92,7 +92,6 @@ public class RequestProcessor {
 		 * insuranceImplFactory.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR,
 		 * properties).getElibilityResponse(eligReq);
 		 */
-		logger.debug("eligibityResponse: "+InsuranceUtils.mapToJson(eligibilityResponse));
 		return InsuranceUtils.mapToJson(eligibilityResponse);
 		//return gson.toJson(eligibilityResponse);
 
