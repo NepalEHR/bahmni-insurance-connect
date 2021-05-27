@@ -77,8 +77,12 @@ public class InsuranceController {
 			try {
 				benefitBalance = eligibilityResponse.getEligibilityBalance().get(0).getBenefitBalance();
 			}catch(Exception e){}
+			try{
 			String code = eligibilityResponse.getEligibilityBalance().get(0).getCode();
+			}catch(Exception e){String code = "-";}
+			try{
 			String term = eligibilityResponse.getEligibilityBalance().get(0).getTerm();
+			}catch(Exception e){String term = "-";}
 
 			model.addAttribute("patientId", patientId);
 			model.addAttribute("status", status);
