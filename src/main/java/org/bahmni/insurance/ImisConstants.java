@@ -56,7 +56,7 @@ public class ImisConstants {
 	};
 	
 	
-	public final static String FHIR_VERSION = "STU3";
+	public final static String FHIR_VERSION = "R4";
 
 
 	public final static String FHIR_CLIENT = "fhir";
@@ -71,5 +71,8 @@ public class ImisConstants {
 	public final static String VISIT_UUID = "visitUUID";
 	public final static String FHIR_CODE_FOR_IMIS_CLAIM_CODE_TYPE = "MR";
 	public final static String FHIR_VALUESET_SYSTEM = "https://hl7.org/fhir/valueset-identifier-type.html";
+
+	public final static String ATTACHMENT = "Attachment";
+	public final static String SUPPORTING_INFO = "attachment";
 
 }

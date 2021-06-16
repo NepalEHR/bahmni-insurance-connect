@@ -27,6 +27,10 @@ public class ClaimParam {
 	@Expose
 	private List<ClaimLineItemRequest> item;
 
+	@SerializedName("supportingInfo")
+	@Expose
+	private List<ClaimLineSupportingInfoRequest> supportingInfo;
+
 	@SerializedName("total")
 	@Expose
 	private BigDecimal total;
@@ -79,4 +83,11 @@ public class ClaimParam {
 		this.total = total;
 	}
 
+	public List<ClaimLineSupportingInfoRequest> getSupportingInfo() {
+		return supportingInfo;
+	}
+
+	public void setSupportingInfo(List<ClaimLineSupportingInfoRequest> supportingInfo) {
+		this.supportingInfo = supportingInfo;
+	}
 }

@@ -12,26 +12,19 @@ import org.bahmni.insurance.AppProperties;
 import org.bahmni.insurance.ImisConstants;
 import org.bahmni.insurance.exception.FhirFormatException;
 import org.bahmni.insurance.model.ClaimLineItemRequest;
+import org.bahmni.insurance.model.ClaimLineSupportingInfoRequest;
 import org.bahmni.insurance.model.ClaimParam;
 import org.bahmni.insurance.model.VisitSummary;
 import org.bahmni.insurance.service.AFhirConstructorService;
 import org.bahmni.insurance.utils.InsuranceUtils;
 import org.bahmni.insurance.validation.FhirInstanceValidator;
-import org.hl7.fhir.r4.model.Claim;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Claim.ItemComponent;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.CoverageEligibilityRequest;
+import org.hl7.fhir.r4.model.Claim.SupportingInformationComponent;
 import org.hl7.fhir.r4.model.CoverageEligibilityRequest.EligibilityRequestStatus;
 //import org.hl7.fhir.r4.model.EligibilityRequest;
 //import org.hl7.fhir.r4.model.EligibilityRequest.EligibilityRequestStatus;
-import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
-import org.hl7.fhir.r4.model.Money;
-import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.SimpleQuantity;
-import org.hl7.fhir.r4.model.Task;
 import org.hl7.fhir.r4.model.Task.TaskStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -159,7 +152,11 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		CodeableConcept typeValue =  new CodeableConcept();
 		typeValue.setText(visitDetails.getVisitType()) ; 
 		claimReq.setType(typeValue);
-		
+
+		//Supporting Info
+		List<SupportingInformationComponent> listSupportingInfo = populateClaimableSupportingInfo(claimParam.getSupportingInfo());
+		claimReq.setSupportingInfo(listSupportingInfo);
+
 		return claimReq;
 	}
 
@@ -189,6 +186,33 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		return listItemComponent;
 	}
 
+	private List<SupportingInformationComponent> populateClaimableSupportingInfo(List<ClaimLineSupportingInfoRequest> listSupportingInfo) {
+		List<SupportingInformationComponent> listSupportingInfoComponent = new ArrayList<>();
+		for (ClaimLineSupportingInfoRequest claimsupportingInfo : listSupportingInfo) {
+			SupportingInformationComponent supportingInfoComponent = new SupportingInformationComponent();
+
+			CodeableConcept codeConceptCategory = new CodeableConcept();
+			codeConceptCategory.setText(claimsupportingInfo.getCategory());
+			Coding categoryCoding = new Coding();
+			categoryCoding.setDisplay(claimsupportingInfo.getCategory());
+			categoryCoding.setCode(claimsupportingInfo.getCategory());
+			codeConceptCategory.addCoding(categoryCoding);
+			supportingInfoComponent.setCategory(codeConceptCategory);
+
+			Attachment doc = new Attachment();
+			doc.setContentType(claimsupportingInfo.getContentType());
+			doc.setData(claimsupportingInfo.getData());
+			doc.setCreation(claimsupportingInfo.getCreation());
+			doc.setHash(claimsupportingInfo.getHash());
+			doc.setTitle(claimsupportingInfo.getTitle());
+			supportingInfoComponent.setValue(doc);
+
+
+			listSupportingInfoComponent.add(supportingInfoComponent);
+		}
+		return listSupportingInfoComponent;
+	}
+
 	@Override
 	public CoverageEligibilityRequest constructFhirEligibilityRequest(String insuranceID) throws IOException {
 
@@ -214,6 +238,8 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 //		Reference referenceInsurer = new Reference();
 //		referenceInsurer.setReference("Organization/2");
 //		eligibilityRequest.setInsurer(referenceInsurer);
+
+
 
 		return eligibilityRequest;
 	}
