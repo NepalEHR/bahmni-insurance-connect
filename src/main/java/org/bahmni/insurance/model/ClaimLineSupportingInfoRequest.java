@@ -11,26 +11,9 @@ public class ClaimLineSupportingInfoRequest {
 	@Expose
 	private List<SupportingInfoLineCodingRequest> category;
 
-	@SerializedName("title")
+	@SerializedName("valueAttachment")
 	@Expose
-	private String title;
-
-	@SerializedName("creation")
-	@Expose
-	private Date creation;
-
-	@SerializedName("hash")
-	@Expose
-	private byte[] hash;
-
-	@SerializedName("data")
-	@Expose
-	private byte[] data;
-
-	@SerializedName("contentType")
-	@Expose
-	private String contentType;
-
+	private List<SupportingInfoLineValueAttachmentRequest> valueAttachment;
 
 	public List<SupportingInfoLineCodingRequest> getCategory() {
 		return category;
@@ -40,43 +23,11 @@ public class ClaimLineSupportingInfoRequest {
 		this.category = category;
 	}
 
-	public String getTitle() {
-		return title;
+	public List<SupportingInfoLineValueAttachmentRequest> getValueAttachment() {
+		return valueAttachment;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public Date getCreation() {
-		return creation;
-	}
-
-	public void setCreation(Date creation) {
-		this.creation = creation;
-	}
-
-	public byte[] getHash() {
-		return hash;
-	}
-
-	public void setHash(byte[] hash) {
-		this.hash = hash;
-	}
-
-	public byte[] getData() {
-		return data;
-	}
-
-	public void setData(byte[] data) {
-		this.data = data;
-	}
-
-	public String getContentType() {
-		return contentType;
-	}
-
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
+	public void setValueAttachment(List<SupportingInfoLineValueAttachmentRequest> valueAttachment) {
+		this.valueAttachment = valueAttachment;
 	}
 }
