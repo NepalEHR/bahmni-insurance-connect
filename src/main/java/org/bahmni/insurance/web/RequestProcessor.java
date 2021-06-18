@@ -101,7 +101,6 @@ public class RequestProcessor {
 	@ResponseBody
 	public ClaimResponseModel submitClaim(HttpServletResponse response, @RequestBody ClaimParam claimParams)
 			throws RestClientException, URISyntaxException, DataFormatException, IOException {
-		logger.debug("submitClaim : ");
 		Claim claimRequest = fhirConstructorService.constructFhirClaimRequest(claimParams);
 		logger.error("claimRequest : "+FhirParser.encodeResourceToString(claimRequest));
 		String claimReqStr = FhirParser.encodeResourceToString(claimRequest);

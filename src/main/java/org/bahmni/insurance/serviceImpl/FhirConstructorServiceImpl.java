@@ -153,7 +153,6 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		typeValue.setText(visitDetails.getVisitType()) ; 
 		claimReq.setType(typeValue);
 
-		System.out.print("Supporting info");
 		//Supporting Info
 		List<SupportingInformationComponent> listSupportingInfo = populateClaimableSupportingInfo(claimParam.getSupportingInfo());
 		claimReq.setSupportingInfo(listSupportingInfo);
@@ -188,20 +187,18 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 	}
 
 	private List<SupportingInformationComponent> populateClaimableSupportingInfo(List<ClaimLineSupportingInfoRequest> listSupportingInfo) {
-		System.out.print("Inside supporting info claim");
 		List<SupportingInformationComponent> listSupportingInfoComponent = new ArrayList<>();
+		int i = 0,j=0;
 		for (ClaimLineSupportingInfoRequest claimsupportingInfo : listSupportingInfo) {
 			SupportingInformationComponent supportingInfoComponent = new SupportingInformationComponent();
-			System.out.print("Inside supporting info claim loop 1");
 			CodeableConcept codeConceptCategory = new CodeableConcept();
-			codeConceptCategory.setText(claimsupportingInfo.getCategory());
+			codeConceptCategory.setText(claimsupportingInfo.getCategory().get(i).getText();
 			Coding categoryCoding = new Coding();
-			categoryCoding.setDisplay(claimsupportingInfo.getCategory());
-			categoryCoding.setCode(claimsupportingInfo.getCategory());
+			categoryCoding.setDisplay(claimsupportingInfo.getCategory().get(i).getCoding().get(j).getDisplay());
+			categoryCoding.setCode(claimsupportingInfo.getCategory().get(i).getCoding().get(j).getCode());
 			codeConceptCategory.addCoding(categoryCoding);
 			supportingInfoComponent.setCategory(codeConceptCategory);
 
-			System.out.print("Inside supporting info claim before attachment");
 			Attachment doc = new Attachment();
 			doc.setContentType(claimsupportingInfo.getContentType());
 			doc.setData(claimsupportingInfo.getData());
@@ -212,6 +209,8 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 
 			listSupportingInfoComponent.add(supportingInfoComponent);
+			i++;
+			j++;
 		}
 		return listSupportingInfoComponent;
 	}

@@ -3,12 +3,13 @@ package org.bahmni.insurance.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
+import java.util.List;
 
 public class ClaimLineSupportingInfoRequest {
 
 	@SerializedName("category")
 	@Expose
-	private String category;
+	private List<SupportingInfoLineCodingRequest> category;
 
 	@SerializedName("title")
 	@Expose
@@ -31,11 +32,11 @@ public class ClaimLineSupportingInfoRequest {
 	private String contentType;
 
 
-	public String getCategory() {
+	public List<SupportingInfoLineCodingRequest> getCategory() {
 		return category;
 	}
 
-	public void setCategory(String category) {
+	public void setCategory(List<SupportingInfoLineCodingRequest> category) {
 		this.category = category;
 	}
 
