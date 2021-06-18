@@ -188,28 +188,27 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 	private List<SupportingInformationComponent> populateClaimableSupportingInfo(List<ClaimLineSupportingInfoRequest> listSupportingInfo) {
 		List<SupportingInformationComponent> listSupportingInfoComponent = new ArrayList<>();
-		int i = 0,j=0;
+		int j=0;
 		for (ClaimLineSupportingInfoRequest claimsupportingInfo : listSupportingInfo) {
 			SupportingInformationComponent supportingInfoComponent = new SupportingInformationComponent();
 			CodeableConcept codeConceptCategory = new CodeableConcept();
-			codeConceptCategory.setText(claimsupportingInfo.getCategory().get(i).getText());
+			codeConceptCategory.setText(claimsupportingInfo.getCategory().getText());
 			Coding categoryCoding = new Coding();
-			categoryCoding.setDisplay(claimsupportingInfo.getCategory().get(i).getCoding().get(j).getDisplay());
-			categoryCoding.setCode(claimsupportingInfo.getCategory().get(i).getCoding().get(j).getCode());
+			categoryCoding.setDisplay(claimsupportingInfo.getCategory().getCoding().get(j).getDisplay());
+			categoryCoding.setCode(claimsupportingInfo.getCategory().getCoding().get(j).getCode());
 			codeConceptCategory.addCoding(categoryCoding);
 			supportingInfoComponent.setCategory(codeConceptCategory);
 
 			Attachment doc = new Attachment();
-			doc.setContentType(claimsupportingInfo.getValueAttachment().get(i).getContentType());
-			doc.setData(claimsupportingInfo.getValueAttachment().get(i).getData());
-			doc.setCreation(claimsupportingInfo.getValueAttachment().get(i).getCreation());
-			doc.setHash(claimsupportingInfo.getValueAttachment().get(i).getHash());
-			doc.setTitle(claimsupportingInfo.getValueAttachment().get(i).getTitle());
+			doc.setContentType(claimsupportingInfo.getValueAttachment().getContentType());
+			doc.setData(claimsupportingInfo.getValueAttachment().getData());
+			doc.setCreation(claimsupportingInfo.getValueAttachment().getCreation());
+			doc.setHash(claimsupportingInfo.getValueAttachment().getHash());
+			doc.setTitle(claimsupportingInfo.getValueAttachment().getTitle());
 			supportingInfoComponent.setValue(doc);
 
 
 			listSupportingInfoComponent.add(supportingInfoComponent);
-			i++;
 			j++;
 		}
 		return listSupportingInfoComponent;

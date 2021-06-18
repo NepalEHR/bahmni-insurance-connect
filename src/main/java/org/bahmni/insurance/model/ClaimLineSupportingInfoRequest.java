@@ -9,25 +9,25 @@ public class ClaimLineSupportingInfoRequest {
 
 	@SerializedName("category")
 	@Expose
-	private List<SupportingInfoLineCodingRequest> category;
+	private SupportingInfoLineCodingRequest category;
 
 	@SerializedName("valueAttachment")
 	@Expose
-	private List<SupportingInfoLineValueAttachmentRequest> valueAttachment;
+	private SupportingInfoLineValueAttachmentRequest valueAttachment;
 
-	public List<SupportingInfoLineCodingRequest> getCategory() {
+	public SupportingInfoLineCodingRequest getCategory() {
 		return category;
 	}
 
-	public void setCategory(List<SupportingInfoLineCodingRequest> category) {
+	public void setCategory(SupportingInfoLineCodingRequest category) {
 		this.category = category;
 	}
 
-	public List<SupportingInfoLineValueAttachmentRequest> getValueAttachment() {
+	public SupportingInfoLineValueAttachmentRequest getValueAttachment() {
 		return valueAttachment;
 	}
 
-	public void setValueAttachment(List<SupportingInfoLineValueAttachmentRequest> valueAttachment) {
+	public void setValueAttachment(SupportingInfoLineValueAttachmentRequest valueAttachment) {
 		this.valueAttachment = valueAttachment;
 	}
 }
