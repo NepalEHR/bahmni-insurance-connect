@@ -192,7 +192,7 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		for (ClaimLineSupportingInfoRequest claimsupportingInfo : listSupportingInfo) {
 			SupportingInformationComponent supportingInfoComponent = new SupportingInformationComponent();
 			CodeableConcept codeConceptCategory = new CodeableConcept();
-			codeConceptCategory.setText(claimsupportingInfo.getCategory().get(i).getText();
+			codeConceptCategory.setText(claimsupportingInfo.getCategory().get(i).getText());
 			Coding categoryCoding = new Coding();
 			categoryCoding.setDisplay(claimsupportingInfo.getCategory().get(i).getCoding().get(j).getDisplay());
 			categoryCoding.setCode(claimsupportingInfo.getCategory().get(i).getCoding().get(j).getCode());
@@ -200,11 +200,11 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 			supportingInfoComponent.setCategory(codeConceptCategory);
 
 			Attachment doc = new Attachment();
-			doc.setContentType(claimsupportingInfo.getContentType());
-			doc.setData(claimsupportingInfo.getData());
-			doc.setCreation(claimsupportingInfo.getCreation());
-			doc.setHash(claimsupportingInfo.getHash());
-			doc.setTitle(claimsupportingInfo.getTitle());
+			doc.setContentType(claimsupportingInfo.getValueAttachment().get(i).getContentType());
+			doc.setData(claimsupportingInfo.getValueAttachment().get(i).getData());
+			doc.setCreation(claimsupportingInfo.getValueAttachment().get(i).getCreation());
+			doc.setHash(claimsupportingInfo.getValueAttachment().get(i).getHash());
+			doc.setTitle(claimsupportingInfo.getValueAttachment().get(i).getTitle());
 			supportingInfoComponent.setValue(doc);
 
 
