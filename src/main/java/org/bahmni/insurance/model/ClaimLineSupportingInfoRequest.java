@@ -3,31 +3,79 @@ package org.bahmni.insurance.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
-import java.util.List;
 
 public class ClaimLineSupportingInfoRequest {
 
 	@SerializedName("category")
 	@Expose
-	private SupportingInfoLineCodingRequest category;
+	private String category;
 
-	@SerializedName("valueAttachment")
+	@SerializedName("title")
 	@Expose
-	private SupportingInfoLineValueAttachmentRequest valueAttachment;
+	private String title;
 
-	public SupportingInfoLineCodingRequest getCategory() {
+	@SerializedName("creation")
+	@Expose
+	private Date creation;
+
+	@SerializedName("hash")
+	@Expose
+	private byte[] hash;
+
+	@SerializedName("data")
+	@Expose
+	private byte[] data;
+
+	@SerializedName("contentType")
+	@Expose
+	private String contentType;
+
+
+	public String getCategory() {
 		return category;
 	}
 
-	public void setCategory(SupportingInfoLineCodingRequest category) {
+	public void setCategory(String category) {
 		this.category = category;
 	}
 
-	public SupportingInfoLineValueAttachmentRequest getValueAttachment() {
-		return valueAttachment;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setValueAttachment(SupportingInfoLineValueAttachmentRequest valueAttachment) {
-		this.valueAttachment = valueAttachment;
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public Date getCreation() {
+		return creation;
+	}
+
+	public void setCreation(Date creation) {
+		this.creation = creation;
+	}
+
+	public byte[] getHash() {
+		return hash;
+	}
+
+	public void setHash(byte[] hash) {
+		this.hash = hash;
+	}
+
+	public byte[] getData() {
+		return data;
+	}
+
+	public void setData(byte[] data) {
+		this.data = data;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 }

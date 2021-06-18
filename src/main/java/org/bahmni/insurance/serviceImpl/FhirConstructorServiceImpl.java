@@ -188,28 +188,27 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 	private List<SupportingInformationComponent> populateClaimableSupportingInfo(List<ClaimLineSupportingInfoRequest> listSupportingInfo) {
 		List<SupportingInformationComponent> listSupportingInfoComponent = new ArrayList<>();
-		int j=0;
 		for (ClaimLineSupportingInfoRequest claimsupportingInfo : listSupportingInfo) {
 			SupportingInformationComponent supportingInfoComponent = new SupportingInformationComponent();
 			CodeableConcept codeConceptCategory = new CodeableConcept();
-			codeConceptCategory.setText(claimsupportingInfo.getCategory().getText());
+			codeConceptCategory.setText(claimsupportingInfo.getCategory());
 			Coding categoryCoding = new Coding();
-			categoryCoding.setDisplay(claimsupportingInfo.getCategory().getCoding().get(j).getDisplay());
-			categoryCoding.setCode(claimsupportingInfo.getCategory().getCoding().get(j).getCode());
+			categoryCoding.setDisplay(claimsupportingInfo.getCategory());
+			categoryCoding.setCode(claimsupportingInfo.getCategory());
 			codeConceptCategory.addCoding(categoryCoding);
 			supportingInfoComponent.setCategory(codeConceptCategory);
 
+			
 			Attachment doc = new Attachment();
-			doc.setContentType(claimsupportingInfo.getValueAttachment().getContentType());
-			doc.setData(claimsupportingInfo.getValueAttachment().getData());
-			doc.setCreation(claimsupportingInfo.getValueAttachment().getCreation());
-			doc.setHash(claimsupportingInfo.getValueAttachment().getHash());
-			doc.setTitle(claimsupportingInfo.getValueAttachment().getTitle());
+			doc.setContentType(claimsupportingInfo.getContentType());
+			doc.setData(claimsupportingInfo.getData());
+			doc.setCreation(claimsupportingInfo.getCreation());
+			doc.setHash(claimsupportingInfo.getHash());
+			doc.setTitle(claimsupportingInfo.getTitle());
 			supportingInfoComponent.setValue(doc);
 
 
 			listSupportingInfoComponent.add(supportingInfoComponent);
-			j++;
 		}
 		return listSupportingInfoComponent;
 	}
