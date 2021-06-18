@@ -174,11 +174,10 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 			SimpleQuantity simpleQuantity = new SimpleQuantity();
 			simpleQuantity.setValue(claimItem.getQuantity());
 			itemComponent.setQuantity(simpleQuantity);
-try {
-	CodeableConcept codeConceptService = new CodeableConcept();
-	codeConceptService.setText(claimItem.getCode());
-	itemComponent.setServiced(codeConceptService);
-}catch(Exception e){}
+
+//			CodeableConcept codeConceptService = new CodeableConcept();
+//			codeConceptService.setText(claimItem.getCode());
+//			itemComponent.setServiced(codeConceptService);
 
 			Money value = new Money();
 			value.setValue(claimItem.getUnitPrice());
