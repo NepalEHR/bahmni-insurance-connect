@@ -102,7 +102,7 @@ public class RequestProcessor {
 	public ClaimResponseModel submitClaim(HttpServletResponse response, @RequestBody ClaimParam claimParams)
 			throws RestClientException, URISyntaxException, DataFormatException, IOException {
 		Claim claimRequest = fhirConstructorService.constructFhirClaimRequest(claimParams);
-		logger.error("claimRequest : "+FhirParser.encodeResourceToString(claimRequest));
+
 		String claimReqStr = FhirParser.encodeResourceToString(claimRequest);
 		if(properties.saveClaimResource) {
 			fhirDaoService.insertFhirResource(claimReqStr, ImisConstants.FHIR_RESOURCE_TYPE.CLAIM.getValue() );
@@ -111,7 +111,6 @@ public class RequestProcessor {
 
 		ClaimResponseModel claimResponseModel = insuranceImplFactory
 				.getInsuranceServiceImpl(ImisConstants.OPENIMIS_FHIR, properties).submitClaim(claimRequest);
-		logger.debug("claimResponseModel : " + InsuranceUtils.mapToJson(claimResponseModel));
 
 		return claimResponseModel;
 

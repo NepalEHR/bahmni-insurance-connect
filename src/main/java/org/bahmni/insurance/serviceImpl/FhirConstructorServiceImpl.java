@@ -103,7 +103,6 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		claimReq.setPatient(patientReference);
 
 		// BillablePeriod
-		
 		Period period = new Period();
 		VisitSummary visitDetails = bahmniApiService.getVisitDetail(claimParam.getVisitUUID());
 		period.setStart(new Date( visitDetails.getStartDateTime()));
@@ -118,18 +117,15 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		code.setCode("A09"); // TODO: extract from openmrs api
 		concept.addCoding(code);
 		diagnosisComponent.setDiagnosis(concept);
-		
 		diagnosisComponent.setSequence(1);
 		
 		CodeableConcept conceptType = new CodeableConcept();
 		conceptType.setText("icd_0"); //TODO: remove hardcoded
 		diagnosisComponent.addType(conceptType);
 		
-
 		claimReq.addDiagnosis(diagnosisComponent);
 		
 		// Items/services for claims
-
 		List<ItemComponent> listItemComponent = populateClaimableItems(claimParam.getItem());
 		claimReq.setItem(listItemComponent);
 
@@ -188,14 +184,19 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 	private List<SupportingInformationComponent> populateClaimableSupportingInfo(List<ClaimLineSupportingInfoRequest> listSupportingInfo) {
 		List<SupportingInformationComponent> listSupportingInfoComponent = new ArrayList<>();
+
 		for (ClaimLineSupportingInfoRequest claimsupportingInfo : listSupportingInfo) {
+
 			SupportingInformationComponent supportingInfoComponent = new SupportingInformationComponent();
+
 			CodeableConcept codeConceptCategory = new CodeableConcept();
 			codeConceptCategory.setText(claimsupportingInfo.getCategory());
+
 			Coding categoryCoding = new Coding();
 			categoryCoding.setDisplay(claimsupportingInfo.getCategory());
 			categoryCoding.setCode(claimsupportingInfo.getCategory());
 			codeConceptCategory.addCoding(categoryCoding);
+
 			supportingInfoComponent.setCategory(codeConceptCategory);
 
 			
@@ -209,6 +210,7 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 
 			listSupportingInfoComponent.add(supportingInfoComponent);
+			listSupportingInfoComponent.toString();
 		}
 		return listSupportingInfoComponent;
 	}
