@@ -154,7 +154,6 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		claimReq.setSupportingInfo(listSupportingInfo);
 
 		System.out.print("Claim Request: "+InsuranceUtils.mapToJson(claimReq));
-		System.out.print("claimReq"+claimReq.toString());
 
 		return claimReq;
 	}
