@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import ca.uhn.fhir.parser.IParser;
 import org.apache.commons.codec.binary.Base64;
 import org.bahmni.insurance.AppProperties;
 import org.bahmni.insurance.ImisConstants;
@@ -47,6 +48,8 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 	
 	@Autowired 
 	private BahmniOpenmrsApiClientServiceImpl bahmniApiService;
+
+	private final IParser FhirParser = FhirContext.forR4().newJsonParser();
 
 	@Override
 	public String getFhirPatient(String name) {
@@ -153,7 +156,7 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		List<SupportingInformationComponent> listSupportingInfo = populateClaimableSupportingInfo(claimParam.getSupportingInfo());
 		claimReq.setSupportingInfo(listSupportingInfo);
 
-		System.out.print("Claim Request: "+InsuranceUtils.mapToJson(claimReq));
+		System.out.print("Claim Request: "+FhirParser.encodeResourceToString(claimReq));
 
 		return claimReq;
 	}
