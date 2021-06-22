@@ -148,11 +148,11 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	private ClaimResponseModel populateClaimRespModel(ClaimResponse claimResponse) {
 		ClaimResponseModel clmRespModel = new ClaimResponseModel();
 
-		clmRespModel.setClaimStatus(claimResponse.getOutcome().toString());
+		clmRespModel.setClaimStatus(claimResponse.getOutcome().toCode());
 //		clmRespModel.setClaimStatus(claimResponse.getOutcome().getText();
 		clmRespModel.setClaimId(claimResponse.getId());
 
-		if(ImisConstants.CLAIM_OUTCOME.REJECTED.getOutCome().equals(claimResponse.getOutcome().toString())) {
+		if(ImisConstants.CLAIM_OUTCOME.REJECTED.getOutCome().equals(claimResponse.getOutcome().toCode())) {
 			clmRespModel.setApprovedTotal(claimResponse.getTotal().get(0).getAmount().getValue());
 			clmRespModel.setDateProcessed(claimResponse.getPayment().getDate());
 		}

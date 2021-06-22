@@ -102,8 +102,8 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 		// Insuree patient
 		Reference patientReference = new Reference();
-		patientReference.setReference("Patient/" + claimParam.getInsureeId());
-//		patientReference.setReference("Patient/" + claimParam.getPatientUUID());
+//		patientReference.setReference("Patient/" + claimParam.getInsureeId());
+		patientReference.setReference("Patient/" + claimParam.getPatientUUID());
 		claimReq.setPatient(patientReference);
 
 		// BillablePeriod
