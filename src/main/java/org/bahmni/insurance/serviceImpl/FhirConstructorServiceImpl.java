@@ -102,7 +102,8 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 
 		// Insuree patient
 		Reference patientReference = new Reference();
-		patientReference.setReference("Patient/" + claimParam.getInsureeId());
+//		patientReference.setReference("Patient/" + claimParam.getInsureeId());
+		patientReference.setReference("Patient/" + claimParam.getPatientUUID());
 		claimReq.setPatient(patientReference);
 
 		// BillablePeriod
@@ -175,9 +176,9 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 			simpleQuantity.setValue(claimItem.getQuantity());
 			itemComponent.setQuantity(simpleQuantity);
 
-//			CodeableConcept codeConceptService = new CodeableConcept();
-//			codeConceptService.setText(claimItem.getCode());
-//			itemComponent.setServiced(codeConceptService);
+			CodeableConcept codeConceptService = new CodeableConcept();
+			codeConceptService.setText(claimItem.getCode());
+			itemComponent.setServiced(codeConceptService);
 
 			Money value = new Money();
 			value.setValue(claimItem.getUnitPrice());
