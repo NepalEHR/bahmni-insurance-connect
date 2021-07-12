@@ -147,12 +147,21 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 
 	private ClaimResponseModel populateClaimRespModel(ClaimResponse claimResponse) {
 		ClaimResponseModel clmRespModel = new ClaimResponseModel();
-
-		clmRespModel.setClaimStatus(claimResponse.getOutcome().toCode());
+		Type outcome = null;
+		List<Extension> extension = claimResponse.getExtension();
+		for(int i = 0; i <= extension.size();i++){
+			String url = extension.get(i).getUrl();
+			if(url.equalsIgnoreCase("codedStatus")){
+				outcome = extension.get(i).getValue();
+			}
+		}
+		logger.debug("OUTCOME CODED STATUS : "+ outcome.toString());
+		clmRespModel.setClaimStatus(outcome.toString());
 //		clmRespModel.setClaimStatus(claimResponse.getOutcome().getText();
 		clmRespModel.setClaimId(claimResponse.getId());
 
-		if(ImisConstants.CLAIM_OUTCOME.REJECTED.getOutCome().equals(claimResponse.getOutcome().toCode())) {
+//		if(ImisConstants.CLAIM_OUTCOME.REJECTED.getOutCome().equals(claimResponse.getOutcome().toCode())) {
+		if(ImisConstants.CLAIM_OUTCOME.REJECTED.getOutCome().equals(outcome.toString())){
 			clmRespModel.setApprovedTotal(claimResponse.getTotal().get(0).getAmount().getValue());
 			clmRespModel.setDateProcessed(claimResponse.getPayment().getDate());
 		}
