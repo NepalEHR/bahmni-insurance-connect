@@ -157,7 +157,7 @@ public class FhirConstructorServiceImpl extends AFhirConstructorService {
 		List<SupportingInformationComponent> listSupportingInfo = populateClaimableSupportingInfo(claimParam.getSupportingInfo());
 		claimReq.setSupportingInfo(listSupportingInfo);
 
-		System.out.print("Claim Request: "+FhirParser.encodeResourceToString(claimReq));
+//		System.out.print("Claim Request: "+FhirParser.encodeResourceToString(claimReq));
 
 		return claimReq;
 	}

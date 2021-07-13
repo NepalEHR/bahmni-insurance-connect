@@ -147,17 +147,18 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 
 	private ClaimResponseModel populateClaimRespModel(ClaimResponse claimResponse) {
 		ClaimResponseModel clmRespModel = new ClaimResponseModel();
-		String outcome = null;
-		List<Extension> extension = (List<Extension>) claimResponse.getExtensionByUrl("codedStatus");
+		Type outcome = null;
+		List<Extension> extension = claimResponse.getExtension();
 		for(int i = 0; i <= extension.size();i++){
 			String url = extension.get(i).getUrl();
 			if(url.equalsIgnoreCase("codedStatus")){
-				outcome = extension.get(i).getValue().toString();
+				outcome = extension.get(i).getValue();
 			}
 		}
-		System.out.print("OUTCOME CODED STATUS PRINTED==> "+ outcome);
-		logger.debug("OUTCOME CODED STATUS ==> "+ outcome);
-		clmRespModel.setClaimStatus(outcome);
+		extension.get(1).getUrl();
+		extension.get(1).getValue();
+		logger.debug("OUTCOME CODED STATUS : "+ outcome.toString());
+		clmRespModel.setClaimStatus(outcome.toString());
 //		clmRespModel.setClaimStatus(claimResponse.getOutcome().getText();
 		clmRespModel.setClaimId(claimResponse.getId());
 
@@ -190,7 +191,6 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 			
 		}
 		clmRespModel.setClaimLineItems(claimLineItems);
-		System.out.print("CLAIM RESONSE MODEL ==> "+ clmRespModel);
 		return clmRespModel;
 	}
 
