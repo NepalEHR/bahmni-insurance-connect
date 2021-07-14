@@ -124,7 +124,7 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 		String jsonClaimRequest = FhirParser.encodeResourceToString(claimRequest);
 		ResponseEntity<String> responseObject = sendPostRequest(jsonClaimRequest, properties.imisUrl+properties.openImisFhirApiClaim);
 		ClaimResponse claimResponse = (ClaimResponse) FhirParser.parseResource(responseObject.getBody());
-		System.out.println("ClaimResponse : "+FhirParser.encodeResourceToString(claimResponse));
+//		System.out.println("ClaimResponse : "+FhirParser.encodeResourceToString(claimResponse));
 		return populateClaimRespModel(claimResponse);
 	}
 
