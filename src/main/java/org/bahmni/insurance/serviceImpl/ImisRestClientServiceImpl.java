@@ -149,7 +149,7 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	private ClaimResponseModel populateClaimRespModel(ClaimResponse claimResponse) {
 		ClaimResponseModel clmRespModel = new ClaimResponseModel();
 		Type outcome = null;
-		List<Extension> extension = claimResponse.getModifierExtension();
+		List<Extension> extension = claimResponse.getExtension();
 		for(int i = 0; i <= extension.size();i++){
 			String url = extension.get(i).getUrl();
 			if(url.equalsIgnoreCase("codedStatus")){
