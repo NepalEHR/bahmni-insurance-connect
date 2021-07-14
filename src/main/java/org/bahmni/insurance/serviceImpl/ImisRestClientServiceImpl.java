@@ -20,6 +20,7 @@ import org.bahmni.insurance.model.EligibilityBalance;
 import org.bahmni.insurance.model.EligibilityResponseModel;
 import org.bahmni.insurance.service.AInsuranceClientService;
 import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.ClaimResponse;
 import org.hl7.fhir.r4.model.ClaimResponse.AdjudicationComponent;
 import org.hl7.fhir.r4.model.ClaimResponse.ItemComponent;
@@ -148,15 +149,13 @@ public class ImisRestClientServiceImpl extends AInsuranceClientService {
 	private ClaimResponseModel populateClaimRespModel(ClaimResponse claimResponse) {
 		ClaimResponseModel clmRespModel = new ClaimResponseModel();
 		Type outcome = null;
-		List<Extension> extension = claimResponse.getExtension();
+		List<Extension> extension = claimResponse.getModifierExtension();
 		for(int i = 0; i <= extension.size();i++){
 			String url = extension.get(i).getUrl();
 			if(url.equalsIgnoreCase("codedStatus")){
 				outcome = extension.get(i).getValue();
 			}
 		}
-		extension.get(1).getUrl();
-		extension.get(1).getValue();
 		logger.debug("OUTCOME CODED STATUS : "+ outcome.toString());
 		clmRespModel.setClaimStatus(outcome.toString());
 //		clmRespModel.setClaimStatus(claimResponse.getOutcome().getText();
